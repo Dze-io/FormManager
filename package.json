@@ -1,0 +1,20 @@
+{
+  "name": "form-manager",
+  "version": "1.0.0",
+  "description": "A powerfull Form Manager",
+  "repository": {
+    "type": "git",
+    "url": "https://git.delta-wings.net/dzeio/FormManager"
+  },
+  "bugs": {
+    "url": "https://git.delta-wings.net/dzeio/FormManager/issues",
+    "email": "contact@delta-wings.net"
+  },
+  "author": {
+    "name": "Aviortheking",
+    "email": "florian.bouillon@delta-wings.net",
+    "url": "https://dze.io"
+  },
+  "license": "MIT",
+  "private": false
+}
