@@ -1,4 +1,4 @@
-import { FMAssignInterface } from './../Interfaces';
+import { FMAssignInterface } from '../Interfaces';
 import FormManager from "../FormManager"
 import FMInput from "../FMInput"
 

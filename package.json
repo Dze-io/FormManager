@@ -1,6 +1,7 @@
 {
-  "name": "form-manager",
-  "version": "1.0.0",
+  "name": "@dzeio/form-manager",
+  "version": "0.1.1",
+  "main": "./FormManager.ts",
   "description": "A powerfull Form Manager",
   "repository": {
     "type": "git",
