@@ -322,6 +322,26 @@ export default class FormManager {
 		ajax.send()
 	}
 
+	public setMode(mode: FMMode) {
+		if (mode == FMMode.ViewMode) {
+			for (const name in this.inputs) {
+				if (this.inputs.hasOwnProperty(name)) {
+					const input = this.inputs[name];
+					input.element.setAttribute("disabled", "")
+				}
+			}
+		}
+		if (mode == FMMode.EditMode) {
+			for (const name in this.inputs) {
+				if (this.inputs.hasOwnProperty(name)) {
+					const input = this.inputs[name];
+					input.element.removeAttribute("disabled")
+				}
+
+			}
+		}
+	}
+
 	/**
 	 * Clear the fields in the form
 	 *
@@ -339,6 +359,10 @@ export default class FormManager {
 	}
 }
 
+export enum FMMode {
+	EditMode,
+	ViewMode
+}
 
 /**
  * TODO: FMFileInput
