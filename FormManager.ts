@@ -127,6 +127,15 @@ export default class FormManager {
 	 */
 	private FMInputs: FMAssignInterface[] = []
 
+	/**
+	 * The last verified `FMInput` that returned an error
+	 *
+	 * @type {FMInput}
+	 * @memberof FormManager
+	 */
+	public lastErroredInput: FMInput
+
+
 	private _form: HTMLFormElement
 	/**
 	 * The Form Element of the FM
@@ -229,9 +238,13 @@ export default class FormManager {
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
 				const input = this.inputs[name];
-				if(!input.verify()) return false
+				if(!input.verify()) {
+					this.lastErroredInput = input
+					return false
+				}
 			}
 		}
+		this.lastErroredInput = undefined
 		return true
 	}
 
