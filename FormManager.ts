@@ -310,13 +310,14 @@ export default class FormManager {
 	 * @param {string} uri the URI
 	 * @memberof FormManager
 	 */
-	public fillFromURI(uri: string) {
-		let ajax =  new XMLHttpRequest
+	public fillFromURI(uri: string, callback?: () => void) {
+		let ajax = new XMLHttpRequest
 		ajax.open("GET", uri, true)
 		ajax.addEventListener("loadend", (e) => {
 			if (ajax.readyState === 4 && ajax.status === 200) {
 				let json = JSON.parse(ajax.responseText)
 				this.fillFromJSON(json)
+				if (callback != undefined) callback()
 			}
 		})
 		ajax.send()
