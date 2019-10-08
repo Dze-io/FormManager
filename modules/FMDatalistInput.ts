@@ -22,10 +22,26 @@ export default class FMDatalistInput extends FMInput {
 	}
 
 	setValue(value: string) {
+		if (value == "") {
+			this.element.value = ""
+			return
+		}
 		if (this.datalist) {
-			let option: HTMLOptionElement = this.datalist.querySelector(`[value="${value}"]`)
+			if ((value as any).id != undefined) {
+				value = (value as any).id
+			}
+			let option: HTMLOptionElement = this.datalist.querySelector(`[data-value="${value}"]`)
+			if (option != undefined) {
+				this.element.value = option.value
+				return
+			}
+			if (option == undefined && !this.isStrict) {
+				this.element.value = value
+				return
+			}
 			if (option || !this.isStrict) {
 				this.element.value = value
+				return
 			}
 		}
 	}
