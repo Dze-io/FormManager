@@ -8,7 +8,10 @@ import FMInput from "../FMInput"
  */
 export default class FMDateInput extends FMInput {
 
-	setValue(value: Date) {
+	setValue(value: Date|string) {
+		if (typeof(value) == "string") {
+			value = new Date(value)
+		}
 		this.element.valueAsDate = value
 	}
 
