@@ -1,6 +1,12 @@
 import { InputArrayInterface, FMAssignInterface } from './Interfaces';
 import FMInput from "./FMInput"
 
+/*!
+ * FormManager by DZEIO's team
+ * MIT Licensed
+ * https://dze.io
+ */
+
 /**
  *
  * `datalist` upgrade:
@@ -16,7 +22,7 @@ import FMInput from "./FMInput"
  *     <option data-value="value submitted" value="shown valuea">value subtitle</option>
  * </datalist>
  * ```
- * **ATTENTION if multiple `option` has the same `value` attribute the `data-value` will be the one of the first one**
+ * **ATTENTION if multiple `option` have the same `value` attribute the submitted value will be the first one**
  *
  *
  * a `data-ignore` attribute:
@@ -60,41 +66,38 @@ import FMInput from "./FMInput"
  *
  *
  * a `repeat` type:
- * container: `.form-manager-repeat`
- * template (in container): `.form-manager-template`
- * add button (in container): `.form-manager-add-button`
- * delete button (in template): `.form-manager-delete-button`
+ * container: `.fm-repeat` with a name attribute
+ * template (in container): `.fmr-template`
+ * element (DO NOT PLACE IT YOURSELF) (in container): `.fmr-element`
+ * add button (in container): `.fmr-add`
+ * delete button (in template): `.fmr-del`
  *
- * input MUST have data-name and not name attributes
- * if the script detect `[x]` it will be replaced by `[${index}]`
- * on item deletion all items are re-indexed
- * if `data-default` or `data-autoset` contains `{x}` it will be replaced by `${index}`
+ * input *MUST* have `data-name` and *NOT* `name` attributes
+ * if `data-default` or `data-autoset` contains `{x}` it will be replaced by the index
  *
- * check if input has attribute `form` and that the value is the current form id
- * if so add it to current form
  * ```html
  * <div class="fm-repeat" name="testName">
- *     <div class="fmr-template">
- *         <input data-input type="text"/>
- *         <!-- if there is only one input the name will be `testName[x]` -->
- *         <!-- if there is only multiple inputs the name will be `testName[x][index]` -->
+ *     <div class="fmr-template example-class">
+ *         <input data-input data-name="name" type="text"/>
+ *         <!-- if there is only one input the result will be an array of values -->
+ *         <!-- if there is only multiple inputs the result will be a named array of results -->
  *         <div class="fmr-del">
  *             <button></button>
  *         </div>
  *     </div>
- *     <!-- future content position -->
- *     <div class="">
- *         <input data-input type="text"/>
- *         <div class="fmr-del">
- *             <button></button>
- *         </div>
+ *     <div class="example-class fmr-element">
+ *         <input data-input data-name="name" type="text"/>
+ *         <button class="fmr-del"></button>
  *     </div>
- *     <!-- future content position -->
- *     <div class="fmr-add">
- *         <button></button>
- *     </div>
+ *     <!-- future elements will always be placed before `.fmr-add` -->
+ *     <button class="fmr-add"></button>
  * </div>
  * ```
+ *
+ *
+ * TODO:
+ * check if input has attribute `form` and that the value is the current form id
+ * if so add it to current form
  */
 
 
@@ -109,11 +112,32 @@ import FMInput from "./FMInput"
  */
 export default class FormManager {
 
+	/**
+	 * List of inputs
+	 *
+	 * @private
+	 * @type {InputArrayInterface}
+	 * @memberof FormManager
+	 */
 	private inputs: InputArrayInterface = {}
 
+	/**
+	 * List of interfaces
+	 *
+	 * @private
+	 * @type {FMAssignInterface[]}
+	 * @memberof FormManager
+	 */
 	private FMInputs: FMAssignInterface[] = []
 
 	private _form: HTMLFormElement
+	/**
+	 * The Form Element of the FM
+	 *
+	 * @private
+	 * @type {HTMLFormElement}
+	 * @memberof FormManager
+	 */
 	public set form(v : HTMLFormElement) {this._form = v}
 	public get form(): HTMLFormElement {return this._form}
 
@@ -130,19 +154,30 @@ export default class FormManager {
 			e.preventDefault()
 		}
 
-		//assign default form field
+		//assign default form interface
 		this.assign({
 			input: FMInput
 		})
 
-		//Setup for basic items
+		//Setup the system for basic inputs
 		this.setupInputs()
 	}
 
+	/**
+	 * Add the the FM an Input Manager
+	 *
+	 * @param {FMAssignInterface} inter the interface used
+	 * @memberof FormManager
+	 */
 	public assign(inter: FMAssignInterface) {
 		this.FMInputs.unshift(inter)
 	}
 
+	/**
+	 * Setup the differents inputs to be used with their interfaces
+	 *
+	 * @memberof FormManager
+	 */
 	public setupInputs() {
 		this.form.querySelectorAll("[name]:not([data-name])").forEach((element: HTMLElement) => {
 			let el = this.getInit(element)
@@ -150,6 +185,13 @@ export default class FormManager {
 		});
 	}
 
+	/**
+	 * Retrieve a specific FMInput for a Specific Input
+	 *
+	 * @param {HTMLElement} element
+	 * @returns {FMInput}
+	 * @memberof FormManager
+	 */
 	public getInit(element: HTMLElement): FMInput {
 		inputsLoop: for (const input of this.FMInputs) {
 			if (input.classes != undefined) {
@@ -179,9 +221,11 @@ export default class FormManager {
 	}
 
 	/**
-	 * verify all the values
+	 * Verify the inputs for errors
 	 *
-	 * @returns {boolean} if the requirements are correct or not
+	 * If it return false you can use `fm.lastErroredInput` to get the `FMInput` that errored
+	 *
+	 * @returns {boolean} if the requirements are correct or not (it will stop checking at the first issue)
 	 * @memberof FormManager
 	 */
 	public verify(): boolean {
@@ -195,7 +239,8 @@ export default class FormManager {
 	}
 
 	/**
-	 * submit the form to the `url`
+	 * Submit the form to the `url` in a JSON format
+	 * You can plug an XMLHttpRequest loadend event in the `callback` to recover the results
 	 *
 	 * @param {string} url the url
 	 * @param {(this: XMLHttpRequest, ev: ProgressEvent) => any} [callback] callback of event `loadend`
@@ -214,7 +259,7 @@ export default class FormManager {
 	}
 
 	/**
-	 * return the JSON `{key: value}` sequence
+	 * Return the JSON `{key: value}` sequence
 	 *
 	 * @memberof FormManager
 	 */
@@ -229,6 +274,14 @@ export default class FormManager {
 		return jsonObject
 	}
 
+	/**
+	 * Fill the form from JSON
+	 *
+	 * Hint: _to see what the json is made of use `fm.getJSON`_
+	 *
+	 * @param {*} json the JSON
+	 * @memberof FormManager
+	 */
 	public fillFromJSON(json: any) {
 		for (const key in json) {
 			if (json.hasOwnProperty(key)) {
@@ -240,8 +293,9 @@ export default class FormManager {
 	}
 
 	/**
-	 * fill form from uri
-	 * future parameter will be the `type` of source datas (`JSON`, `XML`)
+	 * fill form from an `uri`
+	 *
+	 * the format MUST be `JSON`
 	 *
 	 * @param {string} uri the URI
 	 * @memberof FormManager
@@ -270,3 +324,28 @@ export default class FormManager {
 		})
 	}
 }
+
+
+/**
+ * TODO: FMFileInput
+ * have a data-endpoint with an URI
+ * on file set -> show button to upload
+ * on file change -> show button "delete and upload"
+ * on upload -> upload and create hidden field with the result ID
+ * on delete -> show notif about it
+ * if pic -> show preview
+ *
+ *
+ *
+ *
+ *
+ * work with an endpoint like this:
+ * retrieve pic: /enpoint?get=pic-id
+ *     return {uri:"/static/pic-name.jpg"}				if it exist
+ *     return {error:true,msg:"picture don't exist"}	is pic dont exist
+ * upload pic: /enpoint?upload
+ *     return {uploaded:true,id:2}
+ * delete pic: /endpoint?del=pic-id
+ *     return {deleted=true}							if deleted
+ *     return {error=true,msg="pic can't be deleted"}	if error
+*/

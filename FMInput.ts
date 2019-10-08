@@ -13,10 +13,23 @@ export default class FMInput {
 		}
 	}
 
+	/**
+	 * Set the element Value
+	 *
+	 * @param {*} value
+	 * @memberof FMInput
+	 */
 	setValue(value: any) {
 		this.element.value = value
 		this.element.setAttribute("value", value)
 	}
+
+	/**
+	 * Get the element value
+	 *
+	 * @returns {*} the value
+	 * @memberof FMInput
+	 */
 	getValue(): any {
 		return this.element.value
 	}
@@ -29,6 +42,12 @@ export default class FMInput {
 		return this.element.getAttribute("name")
 	}
 
+	/**
+	 * Verify if the element is correct
+	 *
+	 * @returns {boolean}
+	 * @memberof FMInput
+	 */
 	verify(): boolean {
 		let val: string = this.getValue()
 		if(val == "" && this.element.hasAttribute("required")) {
