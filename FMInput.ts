@@ -31,7 +31,13 @@ export default class FMInput {
 	 * @memberof FMInput
 	 */
 	getValue(): any {
-		return this.element.value
+		return this.formatValue(this.element.value)
+	}
+
+	formatValue(value: any): any {
+		if (!isNaN(Number(value))) return Number(value)
+		return value
+
 	}
 
 	getDefault(args: string): any {

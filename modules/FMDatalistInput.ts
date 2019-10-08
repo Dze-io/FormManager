@@ -33,9 +33,9 @@ export default class FMDatalistInput extends FMInput {
 	getValue(): string {
 		if (this.datalist) {
 			let option: HTMLOptionElement = this.datalist.querySelector(`[value="${this.element.value}"]`)
-			if (option) return option.dataset.value
+			if (option) return this.formatValue(option.dataset.value)
 		}
-		return this.isStrict ? undefined : this.element.value
+		return this.isStrict ? undefined : this.formatValue(this.element.value)
 	}
 }
 

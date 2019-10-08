@@ -248,7 +248,7 @@ export default class FormManager {
 	 * @returns {boolean} return if the content was sent or not
 	 * @memberof FormManager
 	 */
-	public submit(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => any, verify: boolean = true): boolean {
+	public submit(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => void, verify: boolean = true): boolean {
 		if (verify && !this.verify()) return false
 		let ajax = new XMLHttpRequest
 		ajax.open("POST", url, true)
@@ -264,7 +264,7 @@ export default class FormManager {
 	 * @memberof FormManager
 	 */
 	public getJSON(): any {
-		const jsonObject:any = {}
+		const jsonObject: any = {}
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
 				const input = this.inputs[name];
