@@ -8,9 +8,7 @@ export default class FMInput {
 	constructor(element: HTMLElement, form: FormManager) {
 		this.element = element as HTMLInputElement
 		this.form = form
-		if (this.element.hasAttribute("data-default")) {
-			this.setValue(this.getDefault(this.element.dataset.default))
-		}
+		this.setToDefault()
 	}
 
 	/**
@@ -41,7 +39,18 @@ export default class FMInput {
 	}
 
 	getDefault(args: string): any {
+		if (args.startsWith("run:")) {
+			args = args.split("run:")[1]
+			return eval(args)
+		}
 		return args
+	}
+
+	setToDefault() {
+		if (this.element.hasAttribute("data-default")) {
+			return this.setValue(this.getDefault(this.element.dataset.default))
+		}
+		return this.setValue("")
 	}
 
 	getName(): string {

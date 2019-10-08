@@ -101,9 +101,6 @@ import FMInput from "./FMInput"
  */
 
 
-
-
-
 /**
  * Manager for Forms
  *
@@ -319,8 +316,12 @@ export default class FormManager {
 	 */
 	public clear() {
 		this.form.querySelectorAll("[name]").forEach((el: HTMLInputElement) => {
-			el.value = ""
-			el.removeAttribute("value")
+			for (const name in this.inputs) {
+				if (this.inputs.hasOwnProperty(name)) {
+					const input = this.inputs[name];
+					input.setToDefault()
+				}
+			}
 		})
 	}
 }
