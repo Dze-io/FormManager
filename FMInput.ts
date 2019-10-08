@@ -45,7 +45,7 @@ export default class FMInput {
 	}
 
 	getName(): string {
-		return this.element.getAttribute("name")
+		return this.element.getAttribute("name") == undefined ? this.element.dataset.name : this.element.getAttribute("name")
 	}
 
 	/**
