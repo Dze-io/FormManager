@@ -167,6 +167,16 @@ export default class FormManager {
 
 		//Setup the system for basic inputs
 		this.setupInputs()
+
+		setInterval(() => {
+			this.form.querySelectorAll("[data-autoset]").forEach((el: HTMLInputElement) => {
+				let autosetStr = el.dataset.autoset
+				if (autosetStr.startsWith("run:")) {
+					let tmp = autosetStr.split("run:")[1]
+					el.value = eval(tmp)
+				}
+			})
+		}, 500)
 	}
 
 	/**
