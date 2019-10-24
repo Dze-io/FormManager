@@ -133,19 +133,16 @@ export default class FormManager {
 	 * @type {FMInput}
 	 * @memberof FormManager
 	 */
-	public lastErroredInput: FMInput
+	public lastErroredInput: FMInput|undefined
 
-
-	private _form: HTMLFormElement
 	/**
 	 * The Form Element of the FM
 	 *
-	 * @private
 	 * @type {HTMLFormElement}
 	 * @memberof FormManager
 	 */
-	public set form(v : HTMLFormElement) {this._form = v}
-	public get form(): HTMLFormElement {return this._form}
+	public form: HTMLFormElement
+
 
 	/**
 	 * Creates an instance of FormManager.
@@ -169,9 +166,9 @@ export default class FormManager {
 		this.setupInputs()
 
 		setInterval(() => {
-			this.form.querySelectorAll("[data-autoset]").forEach((el: HTMLInputElement) => {
+			(this.form.querySelectorAll("[data-autoset]") as NodeListOf<HTMLInputElement>).forEach((el: HTMLInputElement) => {
 				let autosetStr = el.dataset.autoset
-				if (autosetStr.startsWith("run:")) {
+				if (autosetStr && autosetStr.startsWith("run:")) {
 					let tmp = autosetStr.split("run:")[1]
 					el.value = eval(tmp)
 				}
@@ -195,9 +192,10 @@ export default class FormManager {
 	 * @memberof FormManager
 	 */
 	public setupInputs() {
-		this.form.querySelectorAll("[name]:not([data-name])").forEach((element: HTMLElement) => {
+		this.inputs = {}
+		this.form.querySelectorAll("[name]:not([data-name])").forEach((element: Element) => {
 			let el = this.getInit(element)
-			this.inputs[el.getName()] = el
+			if (el) this.inputs[el.getName()] = el
 		});
 	}
 
@@ -208,10 +206,10 @@ export default class FormManager {
 	 * @returns {FMInput}
 	 * @memberof FormManager
 	 */
-	public getInit(element: HTMLElement): FMInput {
+	public getInit(element: Element): FMInput|undefined {
 		inputsLoop: for (const input of this.FMInputs) {
 			if (input.classes != undefined) {
-				let tmpList: string[]
+				let tmpList: string[] = []
 				if (typeof input.classes == "object") tmpList = input.classes
 				if (typeof input.classes === "string") tmpList = [input.classes]
 				for (const classe of tmpList) {
@@ -219,7 +217,7 @@ export default class FormManager {
 				}
 			}
 			if (input.attributes != undefined) {
-				let tmpList: string[]
+				let tmpList: string[] = []
 				if (typeof input.attributes == "object") tmpList = input.attributes
 				if (typeof input.attributes === "string") tmpList = [input.attributes]
 				for (const classe of tmpList) {
@@ -334,6 +332,7 @@ export default class FormManager {
 	}
 
 	public setMode(mode: FMMode) {
+		console.log(mode)
 		if (mode == FMMode.ViewMode) {
 			for (const name in this.inputs) {
 				if (this.inputs.hasOwnProperty(name)) {
@@ -353,13 +352,28 @@ export default class FormManager {
 		}
 	}
 
+	public setModeForInput(mode: FMMode, inputName: string) {
+		console.log(mode)
+		if (mode == FMMode.ViewMode) {
+			if (this.inputs[inputName]) {
+				this.inputs[inputName].element.setAttribute("disabled", "")
+			}
+			return
+		}
+		if (mode == FMMode.EditMode) {
+			if (this.inputs[inputName]) {
+				this.inputs[inputName].element.removeAttribute("disabled")
+			}
+		}
+	}
+
 	/**
 	 * Clear the fields in the form
 	 *
 	 * @memberof FormManager
 	 */
 	public clear() {
-		this.form.querySelectorAll("[name]").forEach((el: HTMLInputElement) => {
+		(this.form.querySelectorAll("[name]") as NodeListOf<HTMLInputElement>).forEach((el: HTMLInputElement) => {
 			for (const name in this.inputs) {
 				if (this.inputs.hasOwnProperty(name)) {
 					const input = this.inputs[name];
@@ -377,7 +391,7 @@ export enum FMMode {
 
 /**
  * TODO: FMFileInput
- * have a data-endpoint with an URI
+ * have a data-type with an typeId linked to an URI
  * on file set -> show button to upload
  * on file change -> show button "delete and upload"
  * on upload -> upload and create hidden field with the result ID
@@ -392,7 +406,9 @@ export enum FMMode {
  * retrieve pic: /enpoint?get=pic-id
  *     return {uri:"/static/pic-name.jpg"}				if it exist
  *     return {error:true,msg:"picture don't exist"}	is pic dont exist
- * upload pic: /enpoint?upload
+ * upload pic: /enpoint?upload&type=x
+ * with type is a type id (to set a different location in the system)
+ * _default to type 1_
  *     return {uploaded:true,id:2}
  * delete pic: /endpoint?del=pic-id
  *     return {deleted=true}							if deleted

@@ -1,137 +1,109 @@
-# FormManager
+# Form Manager
 
 A powerfull Manager for all your forms
 
+## Table of Content
 
-## Table of Content <!-- omit in toc -->
+- [Form Manager](#form-manager)
+  - [Table of Content](#table-of-content)
+  - [Installation](#installation)
+  - [usage](#usage)
+    - [Typescript](#typescript)
+  - [Modules & Attributes](#modules--attributes)
+    - [Modules](#modules)
+    - [Attributes](#attributes)
+  - [Issues](#issues)
+  - [Changelog](#changelog)
 
-- [FormManager](#formmanager)
-  - [Base](#base)
-  - [modules](#modules)
-    - [datalist changes](#datalist-changes)
-    - [date changes](#date-changes)
-    - [Repeat Element](#repeat-element)
-  - [TODO LIST](#todo-list)
+## Installation
 
-## Base
+nothing difficult
 
-to have the basic system just import `FormManager`
+```bash
+yarn add @dzeio/form-manager
+or
+npm install @dzeio/form-manager
+```
+
+## usage
+
+### Typescript
 
 ```ts
 import FormManager from '@dzeio/form-manager';
 
-const fm = new FormManager(docuement.getElementById("formId"))
-```
+const fm = new FormManager(docuement.getElementById("form"));
 
-from now on you can get datas by using `fm.getJSON()` fill by using `fm.fillFromJSON()` or `fm.fillFromURI()` verify datas with `fm.verify()`
+// add modules
+import { FMRepeatAssignment } from '@dzeio/FormManager/modules/FMRepeatInput'
 
-## modules
+fm.assign(FMRepeatAssignment)
 
-Actually there is 3 modules included in the system _non of them are loaded_  
-each modules add new functionality to the form (see later)
+// or
 
-to load a module:
-```ts
-//the three modules availables
-import { FMRepeatInputAssignment } from '@dzeio/form-manager/modules/FMRepeatInput'
-import { FMDatalistAssignement } from '@dzeio/form-manager/modules/FMDatalistInput'
-import { FMDateInputAssignement } from '@dzeio/form-manager/modules/FMDateInput'
-
-// add the modules to the Form
-fm.assign(FMRepeatInputAssignment)
-fm.assign(FMDateInputAssignement)
-fm.assign(FMDatalistAssignement)
-
-// reload the manager to use the new modules
-fm.setupInputs()
-
-```
-
-you can customise how the module assign himself to an element by doing this:
-```ts
-/*
-    input: typeof FMInput
-    classes?: string[] | string
-    attributes?: string[] | string
-    type?: string
-    tagName?: string
-*/
+import FMDateInput from '../FormManagerGit/modules/FMDateInput'
 fm.assign({
-    input: FMRepeatInput,
-    classes: "custom-class",
-    attributes: "data-custom",
-    type: "number", //for input
-    tagName: "div"
-})
+    input: FMDateInput,
+    type: "date",
+    tagName: "input"
+});
+
+// After adding modules run to reffect modules to inputs
+fm.setupInputs();
+
+// verify form validity:
+fm.verify(); //return true if valid else return false
+// if it returns false you can use the variable under to see th FMInput that isnt valid
+fm.lastErroredInput
+
+// submit your data to an endpoint
+fm.submit("/api/idk", (ev) => {/* onloaded callback*/}, /* verify datas beforehand default:true*/ true)
+
+// get the json of your form
+fm.getJSON()
+
+// fill form from URI (datas MUST be in JSON (see getJSON for examples))
+fm.fillFromURI("uri")
+
+// same as before but you give the json from ts
+fm.fillFromJSON(json)
+
+// change if you only see the form or edit them
+fm.setMode(FMMode.ViewMode or FMMode.EditMode)
+
+// same thing as before but just for one field
+fm.setModeForInput(FMMode.ViewMode or FMMode.EditMode, "inputName")
+
+// Reset the form to it's defaults values
+fm.clear()
+
 ```
 
-### datalist changes
+## Modules & Attributes
 
-the values for the datalist will not be the `value` attribute anymore but a `data-value` so the end user will see wht you wnt and not the value you want to send
+### Modules
 
-even if you set `data-strict` the result value will only be set if it's from one of the option  
-if not set the value will stay set by what the user wrote
-***ATTENTION if multiple `option` has the same `value` attribute the final value will be the `data-value` of the first `value`***
+| Module name | Description |
+| :---------: | :---------: |
+| [Datalist](https://git.delta-wings.net/dzeio/FormManager/wiki/modules.datalist) | Manage the datalist better than ever ! |
+| [Date](https://git.delta-wings.net/dzeio/FormManager/wiki/modules.date) | Manage the date element |
+| [File](https://git.delta-wings.net/dzeio/FormManager/wiki/modules.file) | Manage single file uploads |
+| [Repeat](https://git.delta-wings.net/dzeio/FormManager/wiki/modules.repeat) | Make your fields repeatable ! |
+| [Select](https://git.delta-wings.net/dzeio/FormManager/wiki/modules.select) | Fix your Select |
 
-ex:
-```html
- <input name="listing" list="list" data-strict/>
- <datalist id="list">
-     <option data-value="value submitted" value="shown value">value subtitle</option>
-     <option data-value="value submitted" value="shown valuee">value subtitle</option>
-     <option data-value="value submitted" value="shown valueq">value subtitle</option>
-     <option data-value="value submitted" value="shown valuea">value subtitle</option>
- </datalist>
-```
+### Attributes
 
-### date changes
+| Attribute name | Description |
+| :------------: | :---------: |
+| [data-autoset](https://git.delta-wings.net/dzeio/FormManager/wiki/attribute.data-autoset) | Update your value in _near_ realtime |
+| [data-default](https://git.delta-wings.net/dzeio/FormManager/wiki/attribute.data-default) | a better value than `value` |
+| [data-ignore](https://git.delta-wings.net/dzeio/FormManager/wiki/attribute.data-ignore) | i don't see this |
+| [data-regex](https://git.delta-wings.net/dzeio/FormManager/wiki/attribute.data-regex) | regex your value |
 
-`FMDateInput` change the result type from a string to a `Date` object  
-and if `data-default` is set the current date will be set
+## Issues
 
-ex:
-```html
-<input type="date" name="date" data-default />
-```
+Complete listing [here](https://git.delta-wings.net/dzeio/FormManager/issues)
 
-### Repeat Element
+## Changelog
 
-the Repeat element allow to add/delete multiple time the sames input(s)
-
-***NOTE***_: actually the filling don't work but the rest work just fine_
-
-Organisation
-```html
-<div class="fm-repeat" name="repeat-element"> <!-- container -->
-    <div class="fmr-template"> <!-- template container (won't show) -->
-        <input data-input type="text"/> <!-- data-input replace the name element -->
-        <!-- if there is only one input the name will be `testName[x]` with `x` being the index -->
-        <!-- if there is only multiple inputs the name will be `testName[x][index]` -->
-        <div class="fmr-del"> <!-- delete button container -->
-            <button></button>
-        </div>
-    </div>
-    <!-- future content position -->
-    <!-- EXample content from above
-    <div>
-        <input data-input type="text"/>
-        <div class="fmr-del">
-            <button></button>
-        </div>
-    </div>
-    -->
-    <!-- future content position -->
-    <div class="fmr-add"> <!-- container for add button -->
-        <button></button>
-    </div>
-</div>
-```
-
-## TODO LIST
-
-more Listing [here](https://git.delta-wings.net/dzeio/FormManager/issues)
-
-- [ ] add `data-autoset` to autofill the input with data from another one _with `readonly` and `disabled`_
-- [ ] allow filling of `FMRepeatInput`
-- [ ] add `data-regex` for verification
-- [ ] add `data-ignore` mainly for `data-autoset`
+[here](./CHANGELOG.md)

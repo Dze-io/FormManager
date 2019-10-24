@@ -19,20 +19,24 @@ export default class FMRepeatInput extends FMInput {
 		super(element, form)
 
 		//fetch Template
-		this.template = element.querySelector(".fmr-template")
+		this.template = element.querySelector(".fmr-template") as HTMLElement
+		if (!this.template) throw Error(`Error: your repeat input "${this.getName()}" MUST have a child with the class .fmr-template`);
+
 		this.template.style.display = "none"
 
 		//fetch add button
-		this.addBtn = element.querySelector(".fmr-add")
+		this.addBtn = element.querySelector(".fmr-add") as HTMLElement
+		if (!this.addBtn) throw Error(`Error: your repeat element "${this.getName()}" MUST have a child with the class .fmr-add`);
+
 		this.addBtn.addEventListener("click", () => {
 			if (!this.addBtn.hasAttribute("disabled")) this.addLine()
 		})
 
-		//Observer to handle attributes changes
+		// Observer to handle attributes changes
 		const observer = new MutationObserver((mutationList: any, observer: any) => {
 			for (let mutation of mutationList) {
 				if (mutation.type === 'attributes' && mutation.attributeName === "disabled") {
-					this.element.querySelectorAll(".fmr-add, .fmr-del").forEach((el: HTMLElement) => {
+					(this.element.querySelectorAll(".fmr-add, .fmr-del") as NodeListOf<HTMLElement>).forEach((el: HTMLElement) => {
 						if (this.element.hasAttribute("disabled")) el.style.display = "none"
 						else el.style.display = ""
 					})
@@ -62,7 +66,7 @@ export default class FMRepeatInput extends FMInput {
 
 		// loop through inputs ot init them
 		let sub: FMInput[] = []
-		node.querySelectorAll("[data-input]").forEach((el: HTMLElement) => {
+		node.querySelectorAll("[data-input]").forEach((el: Element) => {
 			let input = this.form.getInit(el)
 			if (this.element.hasAttribute("disabled")) {
 				input.element.disabled = true
@@ -81,8 +85,8 @@ export default class FMRepeatInput extends FMInput {
 
 		// get the delete button
 		let del = node.querySelector(".fmr-del")
-		del.addEventListener("click", () => {
-			if (!del.hasAttribute("disabled")) {
+		if (del) del.addEventListener("click", () => {
+			if (del && !del.hasAttribute("disabled")) {
 				let id = this.element.querySelectorAll(".fmr-element").length-1
 				this.elements.splice(id)
 				node.remove()
@@ -138,7 +142,7 @@ export default class FMRepeatInput extends FMInput {
 	}
 }
 
-export const FMRepeatInputAssignment: FMAssignInterface = {
+export const FMRepeatAssignment: FMAssignInterface = {
 	input: FMRepeatInput,
 	classes: "fm-repeat",
 	tagName: "div"
