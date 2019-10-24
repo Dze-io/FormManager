@@ -23,7 +23,7 @@
     "typescript": "^3.6.4"
   },
   "scripts": {
-    "build": "tsc --clean",
+    "build": "tsc --build --clean",
     "clean": "rm *.js; rm *.d.ts; rm -r modules/; exit 0"
   }
 }
