@@ -1,8 +1,8 @@
 {
   "name": "@dzeio/form-manager",
-  "version": "0.2.0",
-  "main": "./dist/FormManager.js",
-  "types": "./dist/FormManager.d.ts",
+  "version": "0.2.1",
+  "main": "./FormManager.js",
+  "types": "./FormManager.d.ts",
   "description": "A powerfull Form Manager",
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "typescript": "^3.6.4"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc --clean",
+    "clean": "rm *.js; rm *.d.ts; rm -r modules/; exit 0"
   }
 }

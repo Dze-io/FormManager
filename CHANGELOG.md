@@ -11,9 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Removed
 
+## [0.2.1] - 2019-10-24
+
+### Changed
+
+- changed location of files to make it easier to use !
+
 ## [0.2.0] - 2019-10-24
 
 ### Added
+
 - .gitignore
 - .npmignore
 - CHANGELOG.md
@@ -23,13 +30,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - too much things
 
 ### Changed
+
 - everything
 
 ### Fixed
+
 - everything
 
 ## [0.1.0] - 2019-08-27
+
 ### Added
+
 - FormManager
   - assign
   - setupInputs
@@ -65,5 +76,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - getValue
     - Assignement
 <!-- [Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.0.0...HEAD -->
+[0.2.1]: https://git.delta-wings.net/dzeio/FormManager/src/tag/0.2.1
 [0.2.0]: https://git.delta-wings.net/dzeio/FormManager/src/tag/0.2.0
 [0.1.0]: https://git.delta-wings.net/dzeio/FormManager/src/tag/0.1.0
