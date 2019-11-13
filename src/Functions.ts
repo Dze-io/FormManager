@@ -1,0 +1,51 @@
+/**
+ * Eval string starting with `run:`
+ *
+ * @param str string to process
+ * @param callback function executed if eval return a value
+ * @returns `boolean` return if eval was executed or not
+ */
+export function evalF(str: string, callback?: (str: string) => void): boolean {
+	if (str && str.startsWith("run:")) {
+		let tmp = str.split("run:")[1]
+		const res = eval(tmp)
+		if (res && callback) callback(res)
+		return true
+	}
+	return false
+}
+
+/**
+ * Return the number value of an element of undefined if not correct
+ *
+ * @param str the string to transform
+ */
+export function toNumber(str: string): number|undefined {
+	if (str === "") return undefined
+	// return undefined if it must be shown as string
+	if ((str.startsWith("0") || str.startsWith("+")) && str.length > 1) return undefined
+	const n = Number(str)
+	if (!isNaN(n)) {
+		return n
+	}
+	return undefined
+}
+
+export function toBoolean(str: string): boolean|undefined {
+	if (str === "true") return true
+	if (str === "false") return false
+	return undefined
+}
+
+export function strToNum(str: string): number|string {
+	const n = toNumber(str)
+	if (n) return n
+	return str
+}
+
+
+export function realType(el: string): string|number|boolean {
+	const isBool = toBoolean(el)
+	const isNum = toNumber(el)
+	return typeof isBool === "boolean" ? isBool : typeof isNum === "number" ? isNum : el
+}
