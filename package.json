@@ -1,9 +1,17 @@
 {
   "name": "@dzeio/form-manager",
   "version": "0.2.1",
+  "homepage": "https://dze.io/",
   "main": "./FormManager.js",
   "types": "./FormManager.d.ts",
   "description": "A powerfull Form Manager",
+  "keywords": [
+    "Form",
+    "Manager",
+    "dzeio",
+    "javascript",
+    "Typecript"
+  ],
   "repository": {
     "type": "git",
     "url": "https://git.delta-wings.net/dzeio/FormManager"
@@ -23,7 +31,10 @@
     "typescript": "^3.6.4"
   },
   "scripts": {
-    "build": "tsc --build --clean",
+    "build": "tsc",
     "clean": "rm *.js; rm *.d.ts; rm -r modules/; exit 0"
+  },
+  "installConfig": {
+    "pnp": false
   }
 }
