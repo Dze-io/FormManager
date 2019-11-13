@@ -1,4 +1,4 @@
-import { FMAssignInterface } from '../Interfaces';
+import { InputAssignment } from '../Interfaces';
 import FMInput from "../FMInput"
 
 /**
@@ -8,12 +8,13 @@ import FMInput from "../FMInput"
  */
 export default class FMDateInput extends FMInput {
 
-	setValue(value: Date|string) {
-		// if value is a string set value to the date of the string
-		if (typeof(value) == "string") {
-			value = new Date(value)
+	setValue(value: any) {
+		// handle GO null value
+		const format = this.formatValue(value)
+		if (format) {
+			this.element.valueAsDate = format
 		}
-		this.element.valueAsDate = value
+		this.element.value = format
 	}
 
 	getValue(): Date|undefined {
@@ -22,13 +23,21 @@ export default class FMDateInput extends FMInput {
 		return date == null ? undefined : date
 	}
 
-	getDefault(args: string): Date {
-		// if data-default is present return the current date
-		return new Date
+	public formatValue(val: any): Date|undefined {
+		if (val === "0001-01-01T00:00:00Z") {
+			return undefined
+		}
+		if (typeof val === "string" || typeof val === "number") {
+			return new Date(val)
+		}
+		if (typeof val === "object" && typeof val.getDate === "function") {
+			return (val as Date)
+		}
+		return undefined
 	}
 }
 
-export const FMDateAssignement: FMAssignInterface = {
+export const FMDateAssignement: InputAssignment = {
 	input: FMDateInput,
 	type: "date",
 	tagName: "input"

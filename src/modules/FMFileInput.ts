@@ -1,4 +1,4 @@
-import { FMAssignInterface } from '../Interfaces';
+import { InputAssignment } from '../Interfaces';
 import FMInput from "../FMInput"
 import FormManager from '../FormManager';
 
@@ -111,7 +111,7 @@ export default class FMFileInput extends FMInput {
 
 }
 
-export const FMFileAssignement: FMAssignInterface = {
+export const FMFileAssignement: InputAssignment = {
 	input: FMFileInput,
 	type: "file",
 	tagName: "input"

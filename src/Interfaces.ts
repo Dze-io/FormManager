@@ -3,10 +3,10 @@ import FMInput from "./FMInput"
 /**
  * this interface is used for fetching and setting `name` to `FMInput` link
  *
- * @interface InputArrayInterface
+ * @interface InputArray
  */
-export interface InputArrayInterface {
-	[key:string]: FMInput
+export interface InputArray {
+	[key: string]: FMInput
 }
 
 /**
@@ -15,6 +15,14 @@ export interface InputArrayInterface {
  * @interface FMAssignInterface
  */
 export interface FMAssignInterface {
+	input: typeof FMInput
+	classes?: string[] | string
+	attributes?: string[] | string
+	type?: string
+	tagName?: string
+}
+
+export interface InputAssignment {
 	input: typeof FMInput
 	classes?: string[] | string
 	attributes?: string[] | string

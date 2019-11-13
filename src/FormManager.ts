@@ -1,105 +1,13 @@
-import { InputArrayInterface, FMAssignInterface } from './Interfaces';
+import { InputArray, InputAssignment } from './Interfaces';
 import FMInput from "./FMInput"
+import AttributesManager from './AttributesManager';
+import { FMAttributeListeners } from './FMAttribute';
 
 /*!
  * FormManager by DZEIO's team
  * MIT Licensed
  * https://dze.io
  */
-
-/**
- *
- * `datalist` upgrade:
- * the value submitted won't be the `value` attribute but the `data-value` attribute
- * a `data-strict` attribute if set will return undefined if input value is not from data-value else it will return the input value if not foudn in options
- * ex:
- * ```html
- * <input name="listing" list="list" data-strict/>
- * <datalist id="list">
- *     <option data-value="value submitted" value="shown value">value subtitle</option>
- *     <option data-value="value submitted" value="shown valuee">value subtitle</option>
- *     <option data-value="value submitted" value="shown valueq">value subtitle</option>
- *     <option data-value="value submitted" value="shown valuea">value subtitle</option>
- * </datalist>
- * ```
- * **ATTENTION if multiple `option` have the same `value` attribute the submitted value will be the first one**
- *
- *
- * a `data-ignore` attribute:
- * the input with the data-ignore won't send datas to server _still need the `name` attribute_
- * awesome for usage with `data-autoset`
- *
- * a `data-regex` attribute:
- * when the element is getting verified it will be passed through the regex
- * ex:
- * ```html
- * <!-- value is set by the user -->
- * <input type="text" value="00" data-regex="\d" />
- * <!-- test passed form will submit -->
- * <input type="text" value="O0" data-regex="\d" />
- * <!-- error regex not corresponding form won't submit -->
- * ```
- * _please note that you still have to verify that server-side_
- *
- *
- * a `data-default` attribute:
- * if the value is not something controlable by html it will be set by here
- * depending on the input type different defaults are possibles
- * ex: `date` `datetime` `time` if it's set it will be the current time
- * ```html
- * <input type="date" name="date" data-default />
- * <!-- will result if today was the 2019-08-26 in -->
- * <input type="date" name="date" data-default value="2019-08-26"/>
- * ```
- *
- *
- * a `data-autoset` attribute:
- * this attribute will change it's value regarding other inputs
- * DON'T name any input `x` as it will break the repeat element
- * (you SHOULD use `readonly` or `disabled` attribute with it)
- * ex:
- * ```html
- * <input name="input"/>
- * <input name="test" readonly data-autoset="testing-autoset-{input}"/>
- * ```
- * the test input should always contain `testing-autoset-(the value of input)
- *
- *
- * a `repeat` type:
- * container: `.fm-repeat` with a name attribute
- * template (in container): `.fmr-template`
- * element (DO NOT PLACE IT YOURSELF) (in container): `.fmr-element`
- * add button (in container): `.fmr-add`
- * delete button (in template): `.fmr-del`
- *
- * input *MUST* have `data-name` and *NOT* `name` attributes
- * if `data-default` or `data-autoset` contains `{x}` it will be replaced by the index
- *
- * ```html
- * <div class="fm-repeat" name="testName">
- *     <div class="fmr-template example-class">
- *         <input data-input data-name="name" type="text"/>
- *         <!-- if there is only one input the result will be an array of values -->
- *         <!-- if there is only multiple inputs the result will be a named array of results -->
- *         <div class="fmr-del">
- *             <button></button>
- *         </div>
- *     </div>
- *     <div class="example-class fmr-element">
- *         <input data-input data-name="name" type="text"/>
- *         <button class="fmr-del"></button>
- *     </div>
- *     <!-- future elements will always be placed before `.fmr-add` -->
- *     <button class="fmr-add"></button>
- * </div>
- * ```
- *
- *
- * TODO:
- * check if input has attribute `form` and that the value is the current form id
- * if so add it to current form
- */
-
 
 /**
  * Manager for Forms
@@ -113,19 +21,19 @@ export default class FormManager {
 	 * List of inputs
 	 *
 	 * @private
-	 * @type {InputArrayInterface}
+	 * @type {InputArray}
 	 * @memberof FormManager
 	 */
-	private inputs: InputArrayInterface = {}
+	public inputs: InputArray = {}
 
 	/**
 	 * List of interfaces
 	 *
 	 * @private
-	 * @type {FMAssignInterface[]}
+	 * @type {InputAssignment[]}
 	 * @memberof FormManager
 	 */
-	private FMInputs: FMAssignInterface[] = []
+	private FMInputs: InputAssignment[] = []
 
 	/**
 	 * The last verified `FMInput` that returned an error
@@ -143,6 +51,8 @@ export default class FormManager {
 	 */
 	public form: HTMLFormElement
 
+	public attributeManager: AttributesManager
+
 
 	/**
 	 * Creates an instance of FormManager.
@@ -151,6 +61,7 @@ export default class FormManager {
 	 */
 	constructor(form: HTMLFormElement) {
 		this.form = form
+		this.attributeManager = new AttributesManager(this)
 
 		//Prevent default submit action
 		form.onsubmit = (e) => {
@@ -164,16 +75,6 @@ export default class FormManager {
 
 		//Setup the system for basic inputs
 		this.setupInputs()
-
-		setInterval(() => {
-			(this.form.querySelectorAll("[data-autoset]") as NodeListOf<HTMLInputElement>).forEach((el: HTMLInputElement) => {
-				let autosetStr = el.dataset.autoset
-				if (autosetStr && autosetStr.startsWith("run:")) {
-					let tmp = autosetStr.split("run:")[1]
-					el.value = eval(tmp)
-				}
-			})
-		}, 500)
 	}
 
 	/**
@@ -182,7 +83,17 @@ export default class FormManager {
 	 * @param {FMAssignInterface} inter the interface used
 	 * @memberof FormManager
 	 */
-	public assign(inter: FMAssignInterface) {
+	public assign(...inter: InputAssignment[]) {
+		this.FMInputs.unshift(...inter)
+	}
+
+	/**
+	 * Assign a single Module
+	 *
+	 * @param {FMAssignInterface} inter
+	 * @memberof FormManager
+	 */
+	public assignSingle(inter: InputAssignment) {
 		this.FMInputs.unshift(inter)
 	}
 
@@ -197,6 +108,7 @@ export default class FormManager {
 			let el = this.getInit(element)
 			if (el) this.inputs[el.getName()] = el
 		});
+		this.attributeManager.trigger(FMAttributeListeners.FORM_INIT)
 	}
 
 	/**
@@ -206,7 +118,7 @@ export default class FormManager {
 	 * @returns {FMInput}
 	 * @memberof FormManager
 	 */
-	public getInit(element: Element): FMInput|undefined {
+	public getInit(element: Element): FMInput|void {
 		inputsLoop: for (const input of this.FMInputs) {
 			if (input.classes != undefined) {
 				let tmpList: string[] = []
@@ -246,7 +158,9 @@ export default class FormManager {
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
 				const input = this.inputs[name];
-				if(!input.verify()) {
+				const res = this.attributeManager.triggerElement(FMAttributeListeners.VERIFY, input) as boolean
+				if(!input.verify() || !res) {
+					console.log(input.verify(), res)
 					this.lastErroredInput = input
 					return false
 				}
@@ -268,11 +182,16 @@ export default class FormManager {
 	 */
 	public submit(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => void, verify: boolean = true): boolean {
 		if (verify && !this.verify()) return false
+		let toSend = this.getJSON()
+		let event = this.attributeManager.trigger(FMAttributeListeners.FORM_SUBMIT, toSend)
+		if (typeof event !== "boolean" && event.datas && event.result) {
+			toSend = event.datas
+		}
 		let ajax = new XMLHttpRequest
 		ajax.open("POST", url, true)
 		ajax.setRequestHeader("Content-Type", "application/json")
 		if (callback != undefined) ajax.addEventListener("loadend", callback)
-		ajax.send(JSON.stringify(this.getJSON()))
+		ajax.send(JSON.stringify(toSend))
 		return true
 	}
 
@@ -281,7 +200,7 @@ export default class FormManager {
 	 *
 	 * @memberof FormManager
 	 */
-	public getJSON(): any {
+	public getJSON(): {[key: string]: any} {
 		const jsonObject: any = {}
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
@@ -295,7 +214,7 @@ export default class FormManager {
 	/**
 	 * Fill the form from JSON
 	 *
-	 * Hint: _to see what the json is made of use `fm.getJSON`_
+	 * Hint: _to see what the json look like, use `fm.getJSON`_
 	 *
 	 * @param {*} json the JSON
 	 * @memberof FormManager
@@ -308,6 +227,7 @@ export default class FormManager {
 				else console.warn(`${key} is not a valid input name`)
 			}
 		}
+		this.attributeManager.trigger(FMAttributeListeners.FORM_FILL)
 	}
 
 	/**
@@ -353,7 +273,6 @@ export default class FormManager {
 	}
 
 	public setModeForInput(mode: FMMode, inputName: string) {
-		console.log(mode)
 		if (mode == FMMode.ViewMode) {
 			if (this.inputs[inputName]) {
 				this.inputs[inputName].element.setAttribute("disabled", "")
@@ -373,14 +292,16 @@ export default class FormManager {
 	 * @memberof FormManager
 	 */
 	public clear() {
+		if (this.attributeManager.trigger(FMAttributeListeners.PRE_CLEAR) === false) return
 		(this.form.querySelectorAll("[name]") as NodeListOf<HTMLInputElement>).forEach((el: HTMLInputElement) => {
 			for (const name in this.inputs) {
 				if (this.inputs.hasOwnProperty(name)) {
 					const input = this.inputs[name];
-					input.setToDefault()
+					input.setValue(undefined)
 				}
 			}
 		})
+		this.attributeManager.trigger(FMAttributeListeners.POST_CLEAR)
 	}
 }
 

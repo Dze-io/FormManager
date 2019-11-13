@@ -1,4 +1,4 @@
-import { FMAssignInterface } from './../Interfaces';
+import { InputAssignment } from './../Interfaces';
 import FormManager from "../FormManager"
 import FMInput from "../FMInput"
 
@@ -68,6 +68,9 @@ export default class FMRepeatInput extends FMInput {
 		let sub: FMInput[] = []
 		node.querySelectorAll("[data-input]").forEach((el: Element) => {
 			let input = this.form.getInit(el)
+			if (!input) {
+				return
+			}
 			if (this.element.hasAttribute("disabled")) {
 				input.element.disabled = true
 			}
@@ -142,7 +145,7 @@ export default class FMRepeatInput extends FMInput {
 	}
 }
 
-export const FMRepeatAssignment: FMAssignInterface = {
+export const FMRepeatAssignment: InputAssignment = {
 	input: FMRepeatInput,
 	classes: "fm-repeat",
 	tagName: "div"

@@ -1,4 +1,4 @@
-import { FMAssignInterface } from '../Interfaces';
+import { InputAssignment } from '../Interfaces';
 import FormManager from "../FormManager"
 import FMInput from "../FMInput"
 
@@ -29,7 +29,7 @@ export default class FMDatalistInput extends FMInput {
 
 	setValue(value: string) {
 		// if value is "" set value to ""
-		if (value == "") {
+		if (value == "" || value === undefined) {
 			this.element.value = ""
 			return
 		}
@@ -64,7 +64,7 @@ export default class FMDatalistInput extends FMInput {
 	}
 }
 
-export const FMDatalistAssignement: FMAssignInterface = {
+export const FMDatalistAssignement: InputAssignment = {
 	input: FMDatalistInput,
 	attributes: "list",
 	tagName: "input"

@@ -1,5 +1,6 @@
-import { FMAssignInterface } from '../Interfaces';
+import { InputAssignment } from '../Interfaces';
 import FMInput from "../FMInput"
+import { realType } from '../Functions';
 
 /**
  *
@@ -8,16 +9,16 @@ import FMInput from "../FMInput"
  */
 export default class FMSelectInput extends FMInput {
 
-	getDefault(): any {
-		// check if element as a selected element and if true return it's value
-		let def = this.element.querySelector("option[selected]")
-		if (def) {
-			return (def as HTMLOptionElement).value
+	public formatValue(val: any): any {
+		const opt = this.element.querySelector(`option[value="${val}"]`) || this.element.querySelector("option[selected]")
+		if (opt) {
+			return realType(opt.getAttribute("value") || "")
 		}
+		return undefined
 	}
 }
 
-export const FMSelectAssignement: FMAssignInterface = {
+export const FMSelectAssignement: InputAssignment = {
 	input: FMSelectInput,
 	tagName: "select"
 }
