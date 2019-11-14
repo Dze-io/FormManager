@@ -1,21 +1,22 @@
-import { InputAssignment } from './../Interfaces';
 import FormManager from "../FormManager"
-import FMInput from "../FMInput"
+import DefaultInput from './DefaultInput';
+import InputAbstract from './InputAbstract';
+import InputIdentity from './Interfaces/InputIdentity';
 
 /**
  *
  * @class FMRepeatInput
  * @extends {FMInput}
  */
-export default class FMRepeatInput extends FMInput {
+export default class RepeatInput extends DefaultInput {
 
-	elements: FMInput[][] = []
+	elements: InputAbstract[][] = []
 
 	private template: HTMLElement
 
 	private addBtn: HTMLElement
 
-	constructor(element: HTMLDivElement, form: FormManager) {
+	constructor(element: HTMLElement, form: FormManager) {
 		super(element, form)
 
 		//fetch Template
@@ -65,8 +66,8 @@ export default class FMRepeatInput extends FMInput {
 		node.style.display = ""
 
 		// loop through inputs ot init them
-		let sub: FMInput[] = []
-		node.querySelectorAll("[data-input]").forEach((el: Element) => {
+		let sub: InputAbstract[] = [];
+		(node.querySelectorAll("[data-input]") as NodeListOf<HTMLElement>).forEach((el: HTMLElement) => {
 			let input = this.form.getInit(el)
 			if (!input) {
 				return
@@ -143,10 +144,10 @@ export default class FMRepeatInput extends FMInput {
 		}
 		return values
 	}
-}
 
-export const FMRepeatAssignment: InputAssignment = {
-	input: FMRepeatInput,
-	classes: "fm-repeat",
-	tagName: "div"
+	public static identity: InputIdentity = {
+		input: RepeatInput,
+		classes: "fm-repeat",
+		tagName: "div"
+	}
 }

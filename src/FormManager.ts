@@ -1,7 +1,10 @@
-import { InputArray, InputAssignment } from './Interfaces';
-import FMInput from "./FMInput"
 import AttributesManager from './AttributesManager';
 import { FMAttributeListeners } from './FMAttribute';
+import InputIdentity from './modules/Interfaces/InputIdentity';
+import DefaultInput from './modules/DefaultInput';
+import InputAbstract from './modules/InputAbstract';
+import InputArray from "./modules/Interfaces/InputArray";
+import AttributeListeners from './attributes/AttributeListeners';
 
 /*!
  * FormManager by DZEIO's team
@@ -30,10 +33,10 @@ export default class FormManager {
 	 * List of interfaces
 	 *
 	 * @private
-	 * @type {InputAssignment[]}
+	 * @type {InputIdentity[]}
 	 * @memberof FormManager
 	 */
-	private FMInputs: InputAssignment[] = []
+	private FMInputs: InputIdentity[] = []
 
 	/**
 	 * The last verified `FMInput` that returned an error
@@ -41,7 +44,7 @@ export default class FormManager {
 	 * @type {FMInput}
 	 * @memberof FormManager
 	 */
-	public lastErroredInput: FMInput|undefined
+	public lastErroredInput: InputAbstract|undefined
 
 	/**
 	 * The Form Element of the FM
@@ -69,32 +72,22 @@ export default class FormManager {
 		}
 
 		//assign default form interface
-		this.assign({
-			input: FMInput
-		})
+		this.assign(DefaultInput)
 
 		//Setup the system for basic inputs
 		this.setupInputs()
 	}
 
 	/**
-	 * Add the the FM an Input Manager
+	 * Add to the Manager an Input
 	 *
-	 * @param {FMAssignInterface} inter the interface used
+	 * @param {InputIdentity[]} inter the interface used
 	 * @memberof FormManager
 	 */
-	public assign(...inter: InputAssignment[]) {
-		this.FMInputs.unshift(...inter)
-	}
-
-	/**
-	 * Assign a single Module
-	 *
-	 * @param {FMAssignInterface} inter
-	 * @memberof FormManager
-	 */
-	public assignSingle(inter: InputAssignment) {
-		this.FMInputs.unshift(inter)
+	public assign(...inter: (typeof InputAbstract[])) {
+		for (const input of inter) {
+			this.FMInputs.unshift(input.identity)
+		}
 	}
 
 	/**
@@ -103,12 +96,12 @@ export default class FormManager {
 	 * @memberof FormManager
 	 */
 	public setupInputs() {
-		this.inputs = {}
-		this.form.querySelectorAll("[name]:not([data-name])").forEach((element: Element) => {
+		this.inputs = {};
+		(this.form.querySelectorAll("[name]:not([data-name])") as NodeListOf<HTMLElement>).forEach((element: HTMLElement) => {
 			let el = this.getInit(element)
 			if (el) this.inputs[el.getName()] = el
 		});
-		this.attributeManager.trigger(FMAttributeListeners.FORM_INIT)
+		this.attributeManager.trigger(AttributeListeners.FORM_INIT)
 	}
 
 	/**
@@ -118,7 +111,7 @@ export default class FormManager {
 	 * @returns {FMInput}
 	 * @memberof FormManager
 	 */
-	public getInit(element: Element): FMInput|void {
+	public getInit(element: HTMLElement): InputAbstract|void {
 		inputsLoop: for (const input of this.FMInputs) {
 			if (input.classes != undefined) {
 				let tmpList: string[] = []
@@ -158,7 +151,7 @@ export default class FormManager {
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
 				const input = this.inputs[name];
-				const res = this.attributeManager.triggerElement(FMAttributeListeners.VERIFY, input) as boolean
+				const res = this.attributeManager.triggerElement(AttributeListeners.VERIFY, input) as boolean
 				if(!input.verify() || !res) {
 					console.log(input.verify(), res)
 					this.lastErroredInput = input
@@ -183,9 +176,9 @@ export default class FormManager {
 	public submit(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => void, verify: boolean = true): boolean {
 		if (verify && !this.verify()) return false
 		let toSend = this.getJSON()
-		let event = this.attributeManager.trigger(FMAttributeListeners.FORM_SUBMIT, toSend)
-		if (typeof event !== "boolean" && event.datas && event.result) {
-			toSend = event.datas
+		let event = this.attributeManager.trigger(AttributeListeners.FORM_SUBMIT, toSend)
+		if (typeof event !== "boolean" && event) {
+			toSend = event
 		}
 		let ajax = new XMLHttpRequest
 		ajax.open("POST", url, true)
@@ -227,7 +220,7 @@ export default class FormManager {
 				else console.warn(`${key} is not a valid input name`)
 			}
 		}
-		this.attributeManager.trigger(FMAttributeListeners.FORM_FILL)
+		this.attributeManager.trigger(AttributeListeners.FORM_FILL)
 	}
 
 	/**
@@ -292,7 +285,7 @@ export default class FormManager {
 	 * @memberof FormManager
 	 */
 	public clear() {
-		if (this.attributeManager.trigger(FMAttributeListeners.PRE_CLEAR) === false) return
+		if (this.attributeManager.trigger(AttributeListeners.PRE_CLEAR) === false) return
 		(this.form.querySelectorAll("[name]") as NodeListOf<HTMLInputElement>).forEach((el: HTMLInputElement) => {
 			for (const name in this.inputs) {
 				if (this.inputs.hasOwnProperty(name)) {
@@ -301,7 +294,7 @@ export default class FormManager {
 				}
 			}
 		})
-		this.attributeManager.trigger(FMAttributeListeners.POST_CLEAR)
+		this.attributeManager.trigger(AttributeListeners.POST_CLEAR)
 	}
 }
 

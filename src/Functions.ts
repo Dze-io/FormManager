@@ -20,8 +20,8 @@ export function evalF(str: string, callback?: (str: string) => void): boolean {
  *
  * @param str the string to transform
  */
-export function toNumber(str: string): number|undefined {
-	if (str === "") return undefined
+export function toNumber(str: any): number|undefined {
+	if (str === "" || str === undefined) return undefined
 	// return undefined if it must be shown as string
 	if ((str.startsWith("0") || str.startsWith("+")) && str.length > 1) return undefined
 	const n = Number(str)
@@ -31,7 +31,11 @@ export function toNumber(str: string): number|undefined {
 	return undefined
 }
 
-export function toBoolean(str: string): boolean|undefined {
+export function isNumber(el: any): boolean {
+	return typeof el === "number"
+}
+
+export function toBoolean(str: any): boolean|undefined {
 	if (str === "true") return true
 	if (str === "false") return false
 	return undefined
@@ -44,7 +48,8 @@ export function strToNum(str: string): number|string {
 }
 
 
-export function realType(el: string): string|number|boolean {
+export function realType(el: any): string|number|boolean {
+	if (isNumber(el)) return el
 	const isBool = toBoolean(el)
 	const isNum = toNumber(el)
 	return typeof isBool === "boolean" ? isBool : typeof isNum === "number" ? isNum : el

@@ -1,6 +1,9 @@
 import FormManager from "./FormManager";
 import FMAttribute, { FMAttributeAssignment, FMAttributeListeners, TriggerCallback } from "./FMAttribute";
-import FMInput from "./FMInput";
+import InputAbstract from "./modules/InputAbstract";
+import AttributeAbstract from "./attributes/AttributeAbstract";
+import AttributeIdentity from "./attributes/Interfaces/AttributeIdentity";
+import AttributeListeners from "./attributes/AttributeListeners";
 
 export default class AttributesManager {
 
@@ -8,7 +11,7 @@ export default class AttributesManager {
 
 	private form: FormManager
 
-	private attributesArray: FMAttributeAssignment[] = []
+	private attributesArray: AttributeIdentity[] = []
 
 	private eventsListenersItems: listenerItems = {}
 
@@ -17,15 +20,13 @@ export default class AttributesManager {
 		AttributesManager.instance = this
 	}
 
-	public register(...attribute: FMAttributeAssignment[]) {
-		this.attributesArray.push(...attribute)
+	public register(...attribute: typeof AttributeAbstract[]) {
+		for (const attr of attribute) {
+			this.attributesArray.push(attr.identity)
+		}
 	}
 
-	public registerSingle(attribute: FMAttributeAssignment) {
-		this.attributesArray.push(attribute)
-	}
-
-	public trigger(event: FMAttributeListeners, data?: any): boolean|TriggerCallback {
+	public trigger(event: AttributeListeners, data?: any): boolean|object {
 		if (!this.eventsListenersItems[event]) return true
 		for (const el of this.eventsListenersItems[event]) {
 			const res = el.trigger(event, data)
@@ -34,7 +35,7 @@ export default class AttributesManager {
 		return true
 	}
 
-	public triggerElement(event: FMAttributeListeners, input: FMInput, data?: any): boolean|TriggerCallback {
+	public triggerElement(event: AttributeListeners, input: InputAbstract, data?: any): boolean|object {
 		if (!this.eventsListenersItems[event]) return true
 		for (const el of this.eventsListenersItems[event]) {
 			if (el.input === input) {
@@ -47,7 +48,7 @@ export default class AttributesManager {
 
 	public onChange(this: HTMLInputElement) {
 		const self = AttributesManager.instance
-		console.log(self.trigger(FMAttributeListeners.CHANGE, self.form.inputs[this.name]))
+		self.trigger(AttributeListeners.CHANGE, self.form.inputs[this.name])
 	}
 
 	// private onChange
@@ -84,5 +85,5 @@ export default class AttributesManager {
 }
 
 interface listenerItems {
-	[key:string]: FMAttribute[]
+	[key:string]: AttributeAbstract[]
 }

@@ -1,5 +1,8 @@
 import FMAttribute, { FMAttributeListeners, FMAttributeAssignment, TriggerCallback } from "../FMAttribute";
 import { evalF } from "../Functions";
+import AttributeListeners from "./AttributeListeners";
+import AttributeAbstract from "./AttributeAbstract";
+import AttributeIdentity from "./Interfaces/AttributeIdentity";
 
 /**
  * elements
@@ -21,10 +24,10 @@ import { evalF } from "../Functions";
  * @implements {FMAClearInterface}
  * @implements {FMAFormInitInterface}
  */
-export default class FMAutosetAttribute
-extends FMAttribute {
-	public trigger(ev: FMAttributeListeners, datas?: any): void {
-		console.log("pouet")
+export default class AutosetAttribute
+extends AttributeAbstract {
+	public trigger(event: AttributeListeners, data?: any): boolean | void | object {
+
 		let str = this.input.element.getAttribute("data-autoset") || ""
 		if (evalF(str, (ster) => {this.input.setValue(ster)})) return
 		this.normal(str)
@@ -47,13 +50,13 @@ extends FMAttribute {
 		}
 	}
 
-	public static listeners: FMAttributeListeners[] = [
-		FMAttributeListeners.CHANGE,
-		FMAttributeListeners.FORM_FILL
+	public static listeners: AttributeListeners[] = [
+		AttributeListeners.CHANGE,
+		AttributeListeners.FORM_FILL
 	]
-}
 
-export const FMAutosetAttributeAssignment: FMAttributeAssignment = {
-	attribute: FMAutosetAttribute,
-	dataElement: "data-autoset"
+	public static identity: AttributeIdentity = {
+		attribute: AutosetAttribute,
+		dataElement: "data-autoset"
+	}
 }

@@ -1,5 +1,7 @@
-import FMAttribute, { FMAttributeListeners, FMAttributeAssignment } from "../FMAttribute";
 import { evalF } from "../Functions";
+import AttributeAbstract from "./AttributeAbstract";
+import AttributeListeners from "./AttributeListeners";
+import AttributeIdentity from "./Interfaces/AttributeIdentity";
 
 /**
  * elements
@@ -21,9 +23,9 @@ import { evalF } from "../Functions";
  * @implements {FMAClearInterface}
  * @implements {FMAFormInitInterface}
  */
-export default class FMDefaultAttribute
-extends FMAttribute {
-	public trigger(ev: FMAttributeListeners): boolean | void {
+export default class DefaultAttribute
+extends AttributeAbstract {
+	public trigger(event: AttributeListeners, data?: any): boolean | void | object {
 		this.run()
 		return true
 	}
@@ -69,13 +71,13 @@ extends FMAttribute {
 		this.input.setValue(attrVal)
 	}
 
-	public static listeners: FMAttributeListeners[] = [
-		FMAttributeListeners.POST_CLEAR,
-		FMAttributeListeners.FORM_INIT
+	public static listeners: AttributeListeners[] = [
+		AttributeListeners.POST_CLEAR,
+		AttributeListeners.FORM_INIT
 	]
-}
 
-export const FMDefaultAttributeAssignment: FMAttributeAssignment = {
-	attribute: FMDefaultAttribute,
-	dataElement: "data-default"
+	public static identity: AttributeIdentity = {
+		attribute: DefaultAttribute,
+		dataElement: "data-default"
+	}
 }

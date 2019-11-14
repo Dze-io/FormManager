@@ -1,5 +1,5 @@
-import { InputAssignment } from '../Interfaces';
-import FMInput from "../FMInput"
+import InputIdentity from './Interfaces/InputIdentity';
+import DefaultInput from './DefaultInput';
 import { realType } from '../Functions';
 
 /**
@@ -7,7 +7,7 @@ import { realType } from '../Functions';
  * @class FMDateInput
  * @extends {FMInput}
  */
-export default class FMSelectInput extends FMInput {
+export default class SelectInput extends DefaultInput {
 
 	public formatValue(val: any): any {
 		const opt = this.element.querySelector(`option[value="${val}"]`) || this.element.querySelector("option[selected]")
@@ -16,9 +16,9 @@ export default class FMSelectInput extends FMInput {
 		}
 		return undefined
 	}
-}
 
-export const FMSelectAssignement: InputAssignment = {
-	input: FMSelectInput,
-	tagName: "select"
+	public static identity: InputIdentity = {
+		input: SelectInput,
+		tagName: "select"
+	}
 }

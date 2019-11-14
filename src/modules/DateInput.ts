@@ -1,44 +1,44 @@
-import { InputAssignment } from '../Interfaces';
-import FMInput from "../FMInput"
+import InputIdentity from './Interfaces/InputIdentity'
+import DefaultInput from './DefaultInput'
 
 /**
  *
  * @class FMDateInput
  * @extends {FMInput}
  */
-export default class FMDateInput extends FMInput {
+export default class DateInput extends DefaultInput {
 
-	setValue(value: any) {
+	public setValue(value: any) {
 		// handle GO null value
 		const format = this.formatValue(value)
 		if (format) {
 			this.element.valueAsDate = format
 		}
-		this.element.value = format
+		this.element.value = ""
 	}
 
-	getValue(): Date|undefined {
+	public getValue(): Date|undefined {
 		// if get date and if null return undefined else return value
 		let date = this.element.valueAsDate
 		return date == null ? undefined : date
 	}
 
 	public formatValue(val: any): Date|undefined {
+		if (typeof val === "object" && typeof val.getDate === "function") {
+			return (val as Date)
+		}
 		if (val === "0001-01-01T00:00:00Z") {
 			return undefined
 		}
 		if (typeof val === "string" || typeof val === "number") {
 			return new Date(val)
 		}
-		if (typeof val === "object" && typeof val.getDate === "function") {
-			return (val as Date)
-		}
 		return undefined
 	}
-}
 
-export const FMDateAssignement: InputAssignment = {
-	input: FMDateInput,
-	type: "date",
-	tagName: "input"
+	public static identity: InputIdentity = {
+		input: DateInput,
+		type: "date",
+		tagName: "input"
+	}
 }

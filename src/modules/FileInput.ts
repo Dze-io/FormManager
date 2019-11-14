@@ -1,13 +1,13 @@
-import { InputAssignment } from '../Interfaces';
-import FMInput from "../FMInput"
 import FormManager from '../FormManager';
+import DefaultInput from './DefaultInput';
+import InputIdentity from './Interfaces/InputIdentity';
 
 /**
  *
  * @class FMFileInput
  * @extends {FMInput}
  */
-export default class FMFileInput extends FMInput {
+export default class FileInput extends DefaultInput {
 
 	isUploaded = false
 
@@ -15,16 +15,16 @@ export default class FMFileInput extends FMInput {
 
 
 
-	button: HTMLButtonElement
+	button: HTMLButtonElement|undefined
 
-	constructor(element: HTMLInputElement, form: FormManager) {
+	constructor(element: HTMLElement, form: FormManager) {
 		super(element, form)
 
 		this.type = this.element.dataset.uploadType ? parseInt(this.element.dataset.uploadType): 1
 
 		element.addEventListener("change", () => {
 			console.log("pouet")
-			let files = element.files
+			let files = this.element.files
 			if (files && element.parentElement && files.length > 0) {
 				const name = element.parentElement.querySelector(".file-name")
 				if (name) name.textContent = files[0].name
@@ -109,10 +109,10 @@ export default class FMFileInput extends FMInput {
 		return true
 	}
 
-}
+	public static identity: InputIdentity = {
+		input: FileInput,
+		type: "file",
+		tagName: "input"
+	}
 
-export const FMFileAssignement: InputAssignment = {
-	input: FMFileInput,
-	type: "file",
-	tagName: "input"
 }

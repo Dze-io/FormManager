@@ -1,18 +1,18 @@
-import { InputAssignment } from '../Interfaces';
 import FormManager from "../FormManager"
-import FMInput from "../FMInput"
+import InputIdentity from './Interfaces/InputIdentity';
+import DefaultInput from './DefaultInput';
 
 /**
  * the upgraded datalist element
  * @class FMDatalistInput
  * @extends {FMInput}
  */
-export default class FMDatalistInput extends FMInput {
+export default class DatalistInput extends DefaultInput {
 
 	datalist: HTMLDataListElement
 	isStrict: boolean
 
-	constructor(element: HTMLInputElement, form: FormManager) {
+	constructor(element: HTMLElement, form: FormManager) {
 		super(element, form)
 
 		// check if input is strict on inputs
@@ -62,10 +62,11 @@ export default class FMDatalistInput extends FMInput {
 		// if strict return undefined else return element value
 		return this.isStrict ? undefined : this.formatValue(this.element.value)
 	}
-}
 
-export const FMDatalistAssignement: InputAssignment = {
-	input: FMDatalistInput,
-	attributes: "list",
-	tagName: "input"
+	public static identity: InputIdentity = {
+		input: DatalistInput,
+		attributes: "list",
+		tagName: "input"
+	}
+
 }
