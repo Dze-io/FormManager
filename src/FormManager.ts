@@ -244,8 +244,9 @@ export default class FormManager {
 		ajax.send()
 	}
 
+	public mode = FMMode.EditMode;
 	public setMode(mode: FMMode) {
-		console.log(mode)
+		this.mode = mode
 		if (mode == FMMode.ViewMode) {
 			for (const name in this.inputs) {
 				if (this.inputs.hasOwnProperty(name)) {
@@ -263,6 +264,7 @@ export default class FormManager {
 
 			}
 		}
+		this.attributeManager.trigger(AttributeListeners.MODE_SWITCH, mode)
 	}
 
 	public setModeForInput(mode: FMMode, inputName: string) {
