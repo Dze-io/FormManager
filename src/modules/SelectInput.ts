@@ -9,12 +9,14 @@ import { realType } from '../Functions';
  */
 export default class SelectInput extends DefaultInput {
 
-	public formatValue(val: any): any {
-		const opt = this.element.querySelector(`option[value="${val}"]`) || this.element.querySelector("option[selected]")
-		if (opt) {
-			return realType(opt.getAttribute("value") || "")
+	public formatValue(value: any): any {
+		if (typeof value === "undefined") {
+			const opt: HTMLOptionElement = this.element.querySelector("option[selected]")
+			if (opt) {
+				return opt.value
+			}
 		}
-		return undefined
+		return realType(value)
 	}
 
 	public static identity: InputIdentity = {
