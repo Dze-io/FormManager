@@ -198,7 +198,8 @@ export default class FormManager {
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
 				const input = this.inputs[name];
-				jsonObject[name] = input.getValue()
+				const val = input.getValue()
+				if (val != undefined) jsonObject[name] = val
 			}
 		}
 		return jsonObject
