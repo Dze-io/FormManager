@@ -21,8 +21,9 @@ export function evalF(str: string, callback?: (str: string) => void): boolean {
  * @param str the string to transform
  */
 export function toNumber(str: any): number|undefined {
-	if (str === "" || str === undefined) return undefined
+	if (str !== 0 && (str === "" || str === undefined)) return undefined
 	// return undefined if it must be shown as string
+	// console.log("toNumber", str)
 	if ((str.startsWith("0") || str.startsWith("+")) && str.length > 1) return undefined
 	const n = Number(str)
 	if (!isNaN(n)) {
@@ -32,6 +33,7 @@ export function toNumber(str: any): number|undefined {
 }
 
 export function isNumber(el: any): boolean {
+	// console.log(el)
 	return typeof el === "number"
 }
 
@@ -49,6 +51,9 @@ export function strToNum(str: string): number|string {
 
 
 export function realType(el: any): string|number|boolean {
+	if (typeof el === "object" && el.hasOwnProperty("id")) {
+		el = el.id
+	}
 	if (isNumber(el)) return el
 	const isBool = toBoolean(el)
 	const isNum = toNumber(el)
