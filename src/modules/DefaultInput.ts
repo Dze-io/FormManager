@@ -13,6 +13,7 @@ export default class DefaultInput extends InputAbstract {
 	}
 
 	public formatValue(value: any): any {
+		if (typeof value === "undefined") return ""
 		// if the value is a number return it as a number obj
 		return realType(value)
 	}
@@ -22,6 +23,7 @@ export default class DefaultInput extends InputAbstract {
 		// (Allow other inputs to play with inputs)
 		let attr = this.element.getAttribute("name") || this.element.dataset.name;
 		if (attr) return attr
+		console.error(this.element)
 		throw Error("Error: could not get input name!")
 	}
 
