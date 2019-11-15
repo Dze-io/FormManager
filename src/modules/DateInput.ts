@@ -4,15 +4,16 @@ import DefaultInput from './DefaultInput'
 /**
  *
  * @class FMDateInput
- * @extends {FMInput}
+ * @extends {DefaultInput}
  */
 export default class DateInput extends DefaultInput {
 
 	public setValue(value: any) {
 		// handle GO null value
 		const format = this.formatValue(value)
-		if (format) {
+		if (typeof format === "object") {
 			this.element.valueAsDate = format
+			return
 		}
 		this.element.value = ""
 	}
