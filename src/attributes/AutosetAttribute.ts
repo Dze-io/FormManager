@@ -52,7 +52,8 @@ extends AttributeAbstract {
 
 	public static listeners: AttributeListeners[] = [
 		AttributeListeners.CHANGE,
-		AttributeListeners.FORM_FILL
+		AttributeListeners.FORM_FILL,
+		AttributeListeners.MODE_SWITCH
 	]
 
 	public static identity: AttributeIdentity = {

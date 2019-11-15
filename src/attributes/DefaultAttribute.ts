@@ -73,7 +73,8 @@ extends AttributeAbstract {
 
 	public static listeners: AttributeListeners[] = [
 		AttributeListeners.POST_CLEAR,
-		AttributeListeners.FORM_INIT
+		AttributeListeners.FORM_INIT,
+		AttributeListeners.FORM_FILL
 	]
 
 	public static identity: AttributeIdentity = {
