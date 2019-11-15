@@ -1,6 +1,7 @@
 import FormManager from '../FormManager';
 import DefaultInput from './DefaultInput';
 import InputIdentity from './Interfaces/InputIdentity';
+import { evalF } from '../Functions';
 
 /**
  *
@@ -11,7 +12,7 @@ export default class FileInput extends DefaultInput {
 
 	isUploaded = false
 
-	type = 1
+	type: number|string = 1
 
 
 
@@ -20,7 +21,7 @@ export default class FileInput extends DefaultInput {
 	constructor(element: HTMLElement, form: FormManager) {
 		super(element, form)
 
-		this.type = this.element.dataset.uploadType ? parseInt(this.element.dataset.uploadType): 1
+		this.type = this.element.dataset.uploadType ? this.element.dataset.uploadType: 1
 
 		element.addEventListener("change", () => {
 			console.log("pouet")
@@ -60,12 +61,6 @@ export default class FileInput extends DefaultInput {
 			let form = new FormData
 			form.append(this.getName(), file, file.name)
 			ajax.open("POST", `/api/file?upload&type=${this.type}`)
-			ajax.addEventListener("load", (ev) => {
-				console.log(ev)
-			})
-			ajax.addEventListener("progress", (ev) => {
-				console.log(ev)
-			})
 			ajax.addEventListener("loadstart", () => {
 				if (this.button) this.button.classList.add("is-loading")
 				if (!this.element.hasAttribute("disabled")) {
@@ -81,7 +76,9 @@ export default class FileInput extends DefaultInput {
 				}
 				if (this.button) this.button.innerText = "Uploaded!"
 				this.element.dataset.id = JSON.parse(ajax.responseText).id
-				ajax.responseText
+				if (this.element.hasAttribute("data-on-upload")) {
+					evalF(this.element.dataset.onUpload)
+				}
 			})
 			ajax.send(form)
 		}
