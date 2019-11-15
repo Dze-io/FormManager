@@ -6,6 +6,7 @@ enum AttributeListeners {
 	FORM_SUBMIT, // Event run before submitting (datas is filled with the datas that will be submitted, MUST return TriggerCallback)
 	VERIFY, // Event run on element verification (return true or false only)
 	FORM_FILL, // Event run after the form was filled
+	MODE_SWITCH, // Event run on form mode switch
 }
 
 export default AttributeListeners
