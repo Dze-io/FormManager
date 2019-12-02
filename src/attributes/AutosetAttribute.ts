@@ -34,7 +34,7 @@ extends AttributeAbstract {
 	}
 
 	private normal(str: string) {
-		const regexp = new RegExp("{([a-zA-Z0-9]+)}")
+		const regexp = new RegExp("{([a-zA-Z0-9_-]+)}")
 		let loopMax = 0
 		while (regexp.test(str) && loopMax++ < 10) {
 			const el = regexp.exec(str || "")
