@@ -1,5 +1,4 @@
 import FormManager from "./FormManager";
-import FMAttribute, { FMAttributeAssignment, FMAttributeListeners, TriggerCallback } from "./FMAttribute";
 import InputAbstract from "./modules/InputAbstract";
 import AttributeAbstract from "./attributes/AttributeAbstract";
 import AttributeIdentity from "./attributes/Interfaces/AttributeIdentity";

@@ -1,7 +1,4 @@
 import InputAbstract from "../InputAbstract";
-import FMDatalistInput from "../FMDatalistInput";
-import FMDateInput from "../FMDateInput";
-import DefaultInput from "../DefaultInput";
 import FormManager from "../../FormManager";
 
 interface InputConstructor {

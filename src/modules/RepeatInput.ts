@@ -145,6 +145,15 @@ export default class RepeatInput extends DefaultInput {
 		return values
 	}
 
+	public verify(): boolean {
+		for (const el of this.elements) {
+			for (const i of el) {
+				if (!i.verify()) return false
+			}
+		}
+		return true
+	}
+
 	public static identity: InputIdentity = {
 		input: RepeatInput,
 		classes: "fm-repeat",

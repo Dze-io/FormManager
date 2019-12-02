@@ -1,4 +1,3 @@
-import FMAttribute, { FMAttributeListeners, FMAttributeAssignment, TriggerCallback } from "../FMAttribute";
 import AttributeAbstract from "./AttributeAbstract";
 import AttributeListeners from "./AttributeListeners";
 import AttributeIdentity from "./Interfaces/AttributeIdentity";

@@ -1,5 +1,4 @@
 import AttributesManager from './AttributesManager';
-import { FMAttributeListeners } from './FMAttribute';
 import InputIdentity from './modules/Interfaces/InputIdentity';
 import DefaultInput from './modules/DefaultInput';
 import InputAbstract from './modules/InputAbstract';

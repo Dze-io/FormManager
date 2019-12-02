@@ -1,4 +1,3 @@
-import FMAttribute, { FMAttributeListeners, FMAttributeAssignment, TriggerCallback } from "../FMAttribute";
 import { evalF } from "../Functions";
 import AttributeListeners from "./AttributeListeners";
 import AttributeAbstract from "./AttributeAbstract";
