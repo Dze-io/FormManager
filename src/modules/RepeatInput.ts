@@ -12,7 +12,7 @@ export default class RepeatInput extends DefaultInput {
 
 	elements: InputAbstract[][] = []
 
-	private template: HTMLElement
+	private template: DocumentFragment
 
 	private addBtn: HTMLElement
 
@@ -20,14 +20,26 @@ export default class RepeatInput extends DefaultInput {
 		super(element, form)
 
 		//fetch Template
-		this.template = element.querySelector(".fmr-template") as HTMLElement
-		if (!this.template) throw Error(`Error: your repeat input "${this.getName()}" MUST have a child with the class .fmr-template`);
+		let tmplEl = element.querySelector("template")
+		if (tmplEl) {
+			this.template = tmplEl.content
+			tmplEl.remove()
+		} else {
+			let el = element.querySelector(".fmr-template")
+			if (!el) {
+				throw Error("No Template or .fmr-template elements were found!")
+			}
+			el.classList.remove("fmr-template")
+			this.template = new DocumentFragment
+			this.template.appendChild(el.cloneNode(true))
+			el.remove()
+		}
 
-		this.template.style.display = "none"
+		if (!this.template) throw Error(`Your repeat input "${this.getName()}" MUST have a child with the class .fmr-template`);
 
 		//fetch add button
 		this.addBtn = element.querySelector(".fmr-add") as HTMLElement
-		if (!this.addBtn) throw Error(`Error: your repeat element "${this.getName()}" MUST have a child with the class .fmr-add`);
+		if (!this.addBtn) throw Error(`Your repeat element "${this.getName()}" MUST have a child with the class .fmr-add`);
 
 		this.addBtn.addEventListener("click", () => {
 			if (!this.addBtn.hasAttribute("disabled")) this.addLine()
@@ -60,8 +72,10 @@ export default class RepeatInput extends DefaultInput {
 
 	addLine(values?: any[]|any) {
 		// the new line
-		let node = this.element.insertBefore(this.template.cloneNode(true), this.addBtn) as HTMLElement
-		node.classList.remove("fmr-template")
+		const clone = document.importNode(this.template, true)
+		this.element.insertBefore(clone, this.addBtn)
+		let node = this.element.children.item(this.element.childElementCount-2) as HTMLElement
+		console.log(node)
 		node.classList.add("fmr-element")
 		node.style.display = ""
 
@@ -69,6 +83,7 @@ export default class RepeatInput extends DefaultInput {
 		let sub: InputAbstract[] = [];
 		(node.querySelectorAll("[data-input]") as NodeListOf<HTMLElement>).forEach((el: HTMLElement) => {
 			let input = this.form.getInit(el)
+			console.log(input, values)
 			if (!input) {
 				return
 			}
