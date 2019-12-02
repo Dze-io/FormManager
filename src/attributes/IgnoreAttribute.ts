@@ -24,10 +24,8 @@ import AttributeIdentity from "./Interfaces/AttributeIdentity";
  */
 export default class IgnoreAttribute
 extends AttributeAbstract {
-	public trigger(event: AttributeListeners, data?: any): boolean | void | object {
-		console.log("pouetemon")
+	public trigger(_: AttributeListeners, data?: any): boolean | void | object {
 		data[this.input.getName()] = undefined
-		console.log(data)
 		return data
 	}
 
