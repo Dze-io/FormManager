@@ -25,7 +25,7 @@ import AttributeIdentity from "./Interfaces/AttributeIdentity";
  */
 export default class DefaultAttribute
 extends AttributeAbstract {
-	public trigger(event: AttributeListeners, data?: any): boolean | void | object {
+	public trigger(): boolean | void | object {
 		this.run()
 		return true
 	}

@@ -234,7 +234,7 @@ export default class FormManager {
 	public fillFromURI(uri: string, callback?: () => void) {
 		let ajax = new XMLHttpRequest
 		ajax.open("GET", uri, true)
-		ajax.addEventListener("loadend", (e) => {
+		ajax.addEventListener("loadend", () => {
 			if (ajax.readyState === 4 && ajax.status === 200) {
 				let json = JSON.parse(ajax.responseText)
 				this.fillFromJSON(json)
@@ -288,14 +288,12 @@ export default class FormManager {
 	 */
 	public clear() {
 		if (this.attributeManager.trigger(AttributeListeners.PRE_CLEAR) === false) return
-		(this.form.querySelectorAll("[name]") as NodeListOf<HTMLInputElement>).forEach((el: HTMLInputElement) => {
-			for (const name in this.inputs) {
-				if (this.inputs.hasOwnProperty(name)) {
-					const input = this.inputs[name];
-					input.setValue(undefined)
-				}
+		for (const name in this.inputs) {
+			if (this.inputs.hasOwnProperty(name)) {
+				const input = this.inputs[name];
+				input.setValue(undefined)
 			}
-		})
+		}
 		this.attributeManager.trigger(AttributeListeners.POST_CLEAR)
 	}
 }

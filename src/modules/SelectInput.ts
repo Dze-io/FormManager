@@ -11,7 +11,7 @@ export default class SelectInput extends DefaultInput {
 
 	public formatValue(value: any): any {
 		if (typeof value === "undefined") {
-			const opt: HTMLOptionElement = this.element.querySelector("option[selected]")
+			const opt: HTMLOptionElement|null = this.element.querySelector("option[selected]")
 			if (opt) {
 				return opt.value
 			}

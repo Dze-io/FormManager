@@ -25,7 +25,7 @@ import AttributeIdentity from "./Interfaces/AttributeIdentity";
  */
 export default class AutosetAttribute
 extends AttributeAbstract {
-	public trigger(event: AttributeListeners, data?: any): boolean | void | object {
+	public trigger(): boolean | void | object {
 
 		let str = this.input.element.getAttribute("data-autoset") || ""
 		if (evalF(str, (ster) => {this.input.setValue(ster)})) return

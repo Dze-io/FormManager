@@ -34,7 +34,7 @@ export default class RepeatInput extends DefaultInput {
 		})
 
 		// Observer to handle attributes changes
-		const observer = new MutationObserver((mutationList: any, observer: any) => {
+		const observer = new MutationObserver((mutationList: any) => {
 			for (let mutation of mutationList) {
 				if (mutation.type === 'attributes' && mutation.attributeName === "disabled") {
 					(this.element.querySelectorAll(".fmr-add, .fmr-del") as NodeListOf<HTMLElement>).forEach((el: HTMLElement) => {
