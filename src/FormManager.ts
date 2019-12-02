@@ -96,7 +96,12 @@ export default class FormManager {
 	 */
 	public setupInputs() {
 		this.inputs = {};
-		(this.form.querySelectorAll("[name]:not([data-name])") as NodeListOf<HTMLElement>).forEach((element: HTMLElement) => {
+		let request = this.form.querySelectorAll("[name]:not([data-name])");
+		if (this.form.hasAttribute("id")) {
+			const formID = this.form.getAttribute("id")
+			request = document.querySelectorAll(`[form="${formID}"][name]:not([data-name]), form#${formID} [name]:not([data-name])`)
+		}
+		(request as NodeListOf<HTMLElement>).forEach((element: HTMLElement) => {
 			let el = this.getInit(element)
 			if (el) this.inputs[el.getName()] = el
 		});
