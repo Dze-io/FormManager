@@ -12,6 +12,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Removed
 
+## [0.3.0] - 2019-12-02
+
+### Added
+
+- Attribute Manager
+  - attribute Abstract to create new Attributes
+  - AttributeListeners that are the list of listeners
+  - Multiple event listeners to the Attribute Manager
+  - AutosetAttribute
+- fm.mode to get the active mode
+- Function file with utility functions
+- Better description of `package.json`
+
+### Changed
+
+- Input inheritance from `FMInput` to `InputAbstract`
+- all the input names now don't starts with `FM`
+
+### Fixed
+
+- AutosetAttribute not supporting text variables
+
+### Removed
+
+- `interface.ts` file
+
 ## [0.2.1] - 2019-10-24
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "@dzeio/form-manager",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "homepage": "https://dze.io/",
   "main": "./FormManager.js",
   "types": "./FormManager.d.ts",
@@ -32,7 +32,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rm *.js; rm *.d.ts; rm -r modules/; exit 0"
+    "clean": "rm *.js; rm *.d.ts; rm -r modules/;rm -r attributes/; exit 0"
   },
   "installConfig": {
     "pnp": false
