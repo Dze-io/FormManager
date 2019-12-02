@@ -6,8 +6,6 @@ import AttributeListeners from "./attributes/AttributeListeners";
 
 export default class AttributesManager {
 
-	public static instance: AttributesManager
-
 	private form: FormManager
 
 	private attributesArray: AttributeIdentity[] = []
@@ -16,7 +14,6 @@ export default class AttributesManager {
 
 	public constructor(form: FormManager) {
 		this.form = form
-		AttributesManager.instance = this
 	}
 
 	public register(...attribute: typeof AttributeAbstract[]) {
@@ -45,9 +42,11 @@ export default class AttributesManager {
 		return true
 	}
 
-	public onChange(this: HTMLInputElement) {
-		const self = AttributesManager.instance
-		self.trigger(AttributeListeners.CHANGE, self.form.inputs[this.name])
+	public onChange(ev:KeyboardEvent|Event) {
+		const target = ev.target
+		if (target) {
+			this.trigger(AttributeListeners.CHANGE, this.form.inputs[(target as any).name])
+		}
 	}
 
 	// private onChange
@@ -59,10 +58,10 @@ export default class AttributesManager {
 				continue
 			}
 			const el = this.form.inputs[name];
-			el.element.removeEventListener("keyup", this.onChange)
-			el.element.addEventListener("keyup", this.onChange)
-			el.element.removeEventListener("change", this.onChange)
-			el.element.addEventListener("change", this.onChange)
+			el.element.removeEventListener("keyup", ev => this.onChange(ev))
+			el.element.addEventListener("keyup", ev => this.onChange(ev))
+			el.element.removeEventListener("change", ev => this.onChange(ev))
+			el.element.addEventListener("change", ev => this.onChange(ev))
 
 			// loop through assignments
 			for (const key in this.attributesArray) {
@@ -73,7 +72,7 @@ export default class AttributesManager {
 				if (el.element.hasAttribute(element.dataElement)) {
 					let list = new element.attribute(el)
 					for (const listener of element.attribute.listeners) {
-						if (this.eventsListenersItems[listener] == undefined) this.eventsListenersItems[listener] = []
+						if (this.eventsListenersItems[listener] === undefined) this.eventsListenersItems[listener] = []
 						this.eventsListenersItems[listener].push(list)
 					}
 				}
