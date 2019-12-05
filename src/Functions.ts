@@ -1,3 +1,4 @@
+const evil = eval
 /**
  * Eval string starting with `run:`
  *
@@ -8,7 +9,7 @@
 export function evalF(str: string, callback?: (str: string) => void): boolean {
 	if (str && str.startsWith("run:")) {
 		let tmp = str.split("run:")[1]
-		const res = eval(tmp)
+		const res = evil(tmp)
 		if (res && callback) callback(res)
 		return true
 	}
@@ -21,7 +22,8 @@ export function evalF(str: string, callback?: (str: string) => void): boolean {
  * @param str the string to transform
  */
 export function toNumber(str: any): number|undefined {
-	if (str !== 0 && (str === "" || str === undefined || typeof(str) === "boolean")) return undefined
+	if (typeof str === "number") return str
+	if ((str === "" || str === undefined || typeof(str) === "boolean")) return undefined
 	// return undefined if it must be shown as string
 	// console.log("toNumber", str)
 	if ((str.startsWith("0") || str.startsWith("+")) && str.length > 1) return undefined
@@ -38,6 +40,7 @@ export function isNumber(el: any): boolean {
 }
 
 export function toBoolean(str: any): boolean|undefined {
+	if (typeof str === "boolean") return str
 	if (str === "true") return true
 	if (str === "false") return false
 	return undefined
