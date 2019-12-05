@@ -188,7 +188,7 @@ export default class FormManager {
 	 * @returns {boolean} return if the content was sent or not
 	 * @memberof FormManager
 	 */
-	public send(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => void, options: {verify?:boolean, method?: string} = {verify: true, method: "POST"}): boolean {
+	public send(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent<XMLHttpRequestEventTarget>) => void, options: {verify?:boolean, method?: string} = {verify: true, method: "POST"}): boolean {
 		// Fetch datas
 		let datas = this.getJSON()
 
