@@ -10,7 +10,7 @@ import InputIdentity from './Interfaces/InputIdentity';
  */
 export default class RepeatInput extends DefaultInput {
 
-	elements: InputAbstract[][] = []
+	public elements: InputAbstract[][] = []
 
 	private template: DocumentFragment
 
@@ -75,7 +75,6 @@ export default class RepeatInput extends DefaultInput {
 		const clone = document.importNode(this.template, true)
 		this.element.insertBefore(clone, this.addBtn)
 		let node = this.element.children.item(this.element.childElementCount-2) as HTMLElement
-		console.log(node)
 		node.classList.add("fmr-element")
 		node.style.display = ""
 
@@ -83,7 +82,6 @@ export default class RepeatInput extends DefaultInput {
 		let sub: InputAbstract[] = [];
 		(node.querySelectorAll("[data-input]") as NodeListOf<HTMLElement>).forEach((el: HTMLElement) => {
 			let input = this.form.getInit(el)
-			console.log(input, values)
 			if (!input) {
 				return
 			}
