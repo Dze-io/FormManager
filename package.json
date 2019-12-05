@@ -2,8 +2,10 @@
   "name": "@dzeio/form-manager",
   "version": "0.3.0",
   "homepage": "https://dze.io/",
-  "main": "./FormManager.js",
-  "types": "./FormManager.d.ts",
+  "main": "./dist/commonjs/fm.js",
+  "browser": "./dist/browser/fm.js",
+  "module": "./dist/es6/fm.js",
+  "types": "./dist/types/FormManager.d.ts",
   "description": "A powerfull Form Manager",
   "keywords": [
     "Form",
@@ -28,13 +30,22 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "rollup": "^1.27.8",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript2": "^0.25.2",
+    "rollup-pluginutils": "^2.8.2",
+    "tslib": "^1.10.0",
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rm *.js; rm *.d.ts; rm -r modules/;rm -r attributes/; exit 0"
+    "build": "yarn run build:rollup && yarn run build:ts",
+    "build:rollup": "rollup --config",
+    "build:ts": "tsc --project tsconfig.cjs.json"
   },
   "installConfig": {
     "pnp": false
-  }
+  },
+  "dependencies": {}
 }
