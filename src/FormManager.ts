@@ -38,14 +38,6 @@ export default class FormManager {
 	private FMInputs: InputIdentity[] = []
 
 	/**
-	 * The last verified `FMInput` that returned an error
-	 *
-	 * @type {FMInput}
-	 * @memberof FormManager
-	 */
-	public lastErroredInput: InputAbstract|undefined
-
-	/**
 	 * The Form Element of the FM
 	 *
 	 * @type {HTMLFormElement}
@@ -53,22 +45,34 @@ export default class FormManager {
 	 */
 	public form: HTMLFormElement
 
+	/**
+	 * The Attribute Manager
+	 *
+	 * @type {AttributesManager}
+	 * @memberof FormManager
+	 */
 	public attributeManager: AttributesManager
 
+	/**
+	 * The current mode of the form
+	 *
+	 * @memberof FormManager
+	 */
+	public mode = FMMode.EditMode
 
 	/**
 	 * Creates an instance of FormManager.
 	 * @param {HTMLFormElement} form the form HTMLElement
 	 * @memberof FormManager
 	 */
-	constructor(form: HTMLFormElement) {
+	public constructor(form: HTMLFormElement) {
 		this.form = form
 		this.attributeManager = new AttributesManager(this)
 
 		//Prevent default submit action
-		form.onsubmit = (e) => {
+		form.addEventListener("submit", (e: Event) => {
 			e.preventDefault()
-		}
+		})
 
 		//assign default form interface
 		this.assign(DefaultInput)
@@ -96,12 +100,13 @@ export default class FormManager {
 	 */
 	public setupInputs() {
 		this.inputs = {};
-		let request = this.form.querySelectorAll("[name]:not([data-name])");
-		if (this.form.hasAttribute("id")) {
-			const formID = this.form.getAttribute("id")
-			request = document.querySelectorAll(`[form="${formID}"][name]:not([data-name]), form#${formID} [name]:not([data-name])`)
-		}
-		(request as NodeListOf<HTMLElement>).forEach((element: HTMLElement) => {
+		const formID = this.form.getAttribute("id")
+
+		// Find every inputs
+		const request: NodeListOf<HTMLElement> = formID !== null ? document.querySelectorAll(`[form="${formID}"][name]:not([data-name]), form#${formID} [name]:not([data-name])`) : this.form.querySelectorAll("[name]:not([data-name])")
+
+		// Find each input their class
+		request.forEach((element: HTMLElement) => {
 			let el = this.getInit(element)
 			if (el) this.inputs[el.getName()] = el
 		});
@@ -119,7 +124,7 @@ export default class FormManager {
 		inputsLoop: for (const input of this.FMInputs) {
 			if (input.classes != undefined) {
 				let tmpList: string[] = []
-				if (typeof input.classes == "object") tmpList = input.classes
+				if (typeof input.classes === "object") tmpList = input.classes
 				if (typeof input.classes === "string") tmpList = [input.classes]
 				for (const classe of tmpList) {
 					if(!element.classList.contains(classe)) continue inputsLoop
@@ -127,7 +132,7 @@ export default class FormManager {
 			}
 			if (input.attributes != undefined) {
 				let tmpList: string[] = []
-				if (typeof input.attributes == "object") tmpList = input.attributes
+				if (typeof input.attributes === "object") tmpList = input.attributes
 				if (typeof input.attributes === "string") tmpList = [input.attributes]
 				for (const classe of tmpList) {
 					if(!element.hasAttribute(classe)) continue inputsLoop
@@ -146,25 +151,31 @@ export default class FormManager {
 	/**
 	 * Verify the inputs for errors
 	 *
-	 * If it return false you can use `fm.lastErroredInput` to get the `FMInput` that errored
+	 * @param {boolean} [quick=false] define if the loop should stop after the first error
+	 * @returns {InputAbstract[]} return an array containing the errored elements (Empty if not error)
+	 * @memberof FormManager
+	 */
+	public validate(quick = false): InputAbstract[] {
+		const errored: InputAbstract[] = []
+		for (const name in this.inputs) {
+			if (!this.inputs.hasOwnProperty(name)) continue
+			const input = this.inputs[name];
+			const res = this.attributeManager.triggerElement(AttributeListeners.VERIFY, input) as boolean
+			if (input.verify() && res) continue
+			errored.push(input)
+			if(quick) return errored
+		}
+		return errored
+	}
+
+	/**
+	 * Same as `validate` but return a boolean
 	 *
-	 * @returns {boolean} if the requirements are correct or not (it will stop checking at the first issue)
+	 * @returns {boolean}
 	 * @memberof FormManager
 	 */
 	public verify(): boolean {
-		for (const name in this.inputs) {
-			if (this.inputs.hasOwnProperty(name)) {
-				const input = this.inputs[name];
-				const res = this.attributeManager.triggerElement(AttributeListeners.VERIFY, input) as boolean
-				if(!input.verify() || !res) {
-					console.log(input.verify(), res)
-					this.lastErroredInput = input
-					return false
-				}
-			}
-		}
-		this.lastErroredInput = undefined
-		return true
+		return this.validate(true).length === 0
 	}
 
 	/**
@@ -177,18 +188,23 @@ export default class FormManager {
 	 * @returns {boolean} return if the content was sent or not
 	 * @memberof FormManager
 	 */
-	public submit(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => void, verify: boolean = true): boolean {
-		if (verify && !this.verify()) return false
-		let toSend = this.getJSON()
-		let event = this.attributeManager.trigger(AttributeListeners.FORM_SUBMIT, toSend)
-		if (typeof event !== "boolean" && event) {
-			toSend = event
-		}
-		let ajax = new XMLHttpRequest
-		ajax.open("POST", url, true)
+	public send(url: string, callback?: (this: XMLHttpRequest, ev: ProgressEvent) => void, options: {verify?:boolean, method?: string} = {verify: true, method: "POST"}): boolean {
+		// Fetch datas
+		let datas = this.getJSON()
+
+		// Verify datas
+		if ((options.verify === undefined || (typeof options.verify === "boolean" && options.verify)) && !this.verify()) return false
+
+		// Trigger Event
+		const ev = this.attributeManager.trigger(AttributeListeners.FORM_SUBMIT, datas)
+		if (ev && typeof ev !== "boolean") datas = ev
+
+		// Send Request
+		const ajax = new XMLHttpRequest
+		ajax.open(options.method || "POST", url)
 		ajax.setRequestHeader("Content-Type", "application/json")
-		if (callback != undefined) ajax.addEventListener("loadend", callback)
-		ajax.send(JSON.stringify(toSend))
+		ajax.addEventListener("loadend", callback || (() => {}))
+		ajax.send(JSON.stringify(datas))
 		return true
 	}
 
@@ -243,13 +259,18 @@ export default class FormManager {
 			if (ajax.readyState === 4 && ajax.status === 200) {
 				let json = JSON.parse(ajax.responseText)
 				this.fillFromJSON(json)
-				if (callback != undefined) callback()
+				if (callback !== undefined) callback()
 			}
 		})
 		ajax.send()
 	}
 
-	public mode = FMMode.EditMode;
+	/**
+	 * Set the mode of the Form
+	 *
+	 * @param {FMMode} mode
+	 * @memberof FormManager
+	 */
 	public setMode(mode: FMMode) {
 		this.mode = mode
 		if (mode == FMMode.ViewMode) {
@@ -272,6 +293,15 @@ export default class FormManager {
 		this.attributeManager.trigger(AttributeListeners.MODE_SWITCH, mode)
 	}
 
+	/**
+	 * Same as `setMode` but only for one input
+	 *
+	 * _don't trigger `MODE_SWITCH` event_
+	 *
+	 * @param {FMMode} mode
+	 * @param {string} inputName
+	 * @memberof FormManager
+	 */
 	public setModeForInput(mode: FMMode, inputName: string) {
 		if (mode == FMMode.ViewMode) {
 			if (this.inputs[inputName]) {
@@ -301,35 +331,16 @@ export default class FormManager {
 		}
 		this.attributeManager.trigger(AttributeListeners.POST_CLEAR)
 	}
+
+	public clearInput(input: string) {
+		if (this.inputs.hasOwnProperty(input)) {
+			const inp = this.inputs[input];
+			inp.setValue(undefined)
+		}
+	}
 }
 
 export enum FMMode {
 	EditMode,
 	ViewMode
 }
-
-/**
- * TODO: FMFileInput
- * have a data-type with an typeId linked to an URI
- * on file set -> show button to upload
- * on file change -> show button "delete and upload"
- * on upload -> upload and create hidden field with the result ID
- * on delete -> show notif about it
- * if pic -> show preview
- *
- *
- *
- *
- *
- * work with an endpoint like this:
- * retrieve pic: /enpoint?get=pic-id
- *     return {uri:"/static/pic-name.jpg"}				if it exist
- *     return {error:true,msg:"picture don't exist"}	is pic dont exist
- * upload pic: /enpoint?upload&type=x
- * with type is a type id (to set a different location in the system)
- * _default to type 1_
- *     return {uploaded:true,id:2}
- * delete pic: /endpoint?del=pic-id
- *     return {deleted=true}							if deleted
- *     return {error=true,msg="pic can't be deleted"}	if error
-*/
