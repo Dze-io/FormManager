@@ -57,7 +57,7 @@ export function strToNum(str: string): number | string {
 
 export function realType(el: any): string|number|boolean|undefined {
 	// If el is `null` or `undefined`
-	if ((typeof el === "object" && el === null) || typeof el === "undefined") return undefined
+	if ((typeof el === "object" && el === null) || el === "" || typeof el === "undefined") return undefined
 	if (typeof el === "object" && el.hasOwnProperty("id")) {
 		el = el.id
 	}
