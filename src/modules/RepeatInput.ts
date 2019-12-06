@@ -1,6 +1,6 @@
 import FormManager from "../FormManager"
 import DefaultInput from './DefaultInput';
-import InputAbstract from './InputAbstract';
+import InputAbstract from './AbstractInput';
 import InputIdentity from './Interfaces/InputIdentity';
 
 /**
@@ -89,14 +89,15 @@ export default class RepeatInput extends DefaultInput {
 				input.element.disabled = true
 			}
 			sub.push(input)
+
 			// if values is a named array
 			if (values != undefined && values[input.getName()] != undefined) {
 				input.setValue(values[input.getName()])
+				return
 			}
-			// if value is a single string/number/etc
-			if (typeof(values) != "object" && values != undefined) {
-				input.setValue(values)
-			}
+
+			// Set default value
+			input.setValue(values)
 		})
 		this.elements.push(sub)
 

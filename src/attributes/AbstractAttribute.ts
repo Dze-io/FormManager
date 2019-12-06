@@ -1,8 +1,8 @@
 import AttributeIdentity from './Interfaces/AttributeIdentity';
-import InputAbstract from "../modules/InputAbstract";
+import InputAbstract from "../modules/AbstractInput";
 import AttributeListeners from "./AttributeListeners";
 
-export default abstract class AttributeAbstract {
+export default abstract class AbstractAttribute {
 
 	public input: InputAbstract
 

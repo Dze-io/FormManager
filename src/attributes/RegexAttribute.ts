@@ -1,9 +1,9 @@
 import AttributeIdentity from './Interfaces/AttributeIdentity';
-import AttributeAbstract from './AttributeAbstract';
+import AbstractAttribute from './AbstractAttribute';
 import AttributeListeners from "./AttributeListeners";
 
 export default class RegexAttribute
-extends AttributeAbstract {
+extends AbstractAttribute {
 	public trigger(): boolean {
 		const regStr = this.input.element.dataset.regex
 		if (!regStr) return true

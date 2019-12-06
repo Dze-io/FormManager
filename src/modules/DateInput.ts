@@ -9,7 +9,6 @@ import DefaultInput from './DefaultInput'
 export default class DateInput extends DefaultInput {
 
 	public setValue(value: any) {
-		// handle GO null value
 		const format = this.formatValue(value)
 		if (typeof format === "object") {
 			this.element.valueAsDate = format
@@ -28,6 +27,7 @@ export default class DateInput extends DefaultInput {
 		if (typeof val === "object" && typeof val.getDate === "function") {
 			return (val as Date)
 		}
+		// handle GO null value
 		if (val === "0001-01-01T00:00:00Z") {
 			return undefined
 		}

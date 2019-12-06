@@ -1,4 +1,4 @@
-import AttributeAbstract from "./AttributeAbstract";
+import AbstractAttribute from "./AbstractAttribute";
 import AttributeListeners from "./AttributeListeners";
 import AttributeIdentity from "./Interfaces/AttributeIdentity";
 
@@ -23,7 +23,7 @@ import AttributeIdentity from "./Interfaces/AttributeIdentity";
  * @implements {FMAFormInitInterface}
  */
 export default class IgnoreAttribute
-extends AttributeAbstract {
+extends AbstractAttribute {
 	public trigger(_: AttributeListeners, data?: any): boolean | void | object {
 		data[this.input.getName()] = undefined
 		return data

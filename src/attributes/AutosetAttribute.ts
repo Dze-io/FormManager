@@ -1,6 +1,6 @@
 import { evalF } from "../Functions";
 import AttributeListeners from "./AttributeListeners";
-import AttributeAbstract from "./AttributeAbstract";
+import AbstractAttribute from "./AbstractAttribute";
 import AttributeIdentity from "./Interfaces/AttributeIdentity";
 
 /**
@@ -24,7 +24,7 @@ import AttributeIdentity from "./Interfaces/AttributeIdentity";
  * @implements {FMAFormInitInterface}
  */
 export default class AutosetAttribute
-extends AttributeAbstract {
+extends AbstractAttribute {
 	public trigger(): boolean | void | object {
 
 		let str = this.input.element.getAttribute("data-autoset") || ""

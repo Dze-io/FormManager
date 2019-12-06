@@ -1,8 +1,8 @@
-import InputAbstract from "../InputAbstract";
+import AbstractInput from "../AbstractInput";
 import FormManager from "../../FormManager";
 
 interface InputConstructor {
-	new(element: HTMLElement, form: FormManager): InputAbstract
+	new(element: HTMLElement, form: FormManager): AbstractInput
 }
 
 /**

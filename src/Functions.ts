@@ -21,11 +21,11 @@ export function evalF(str: string, callback?: (str: string) => void): boolean {
  *
  * @param str the string to transform
  */
-export function toNumber(str: any): number|undefined {
+export function toNumber(str: any): number | undefined {
 	if (typeof str === "number") return str
-	if ((str === "" || str === undefined || typeof(str) === "boolean")) return undefined
-	// return undefined if it must be shown as string
-	// console.log("toNumber", str)
+	if (str === "" || typeof str !== "string") return undefined
+
+	// str is a string
 	if ((str.startsWith("0") || str.startsWith("+")) && str.length > 1) return undefined
 	const n = Number(str)
 	if (!isNaN(n)) {
@@ -35,30 +35,33 @@ export function toNumber(str: any): number|undefined {
 }
 
 export function isNumber(el: any): boolean {
-	// console.log(el)
-	return typeof el === "number"
+	return typeof toNumber(el) === "number"
 }
 
-export function toBoolean(str: any): boolean|undefined {
+export function toBoolean(str: any): boolean | undefined {
 	if (typeof str === "boolean") return str
 	if (str === "true") return true
 	if (str === "false") return false
 	return undefined
 }
 
-export function strToNum(str: string): number|string {
+export function isBoolean(el: any): boolean {
+	return typeof toBoolean(el) === "boolean"
+}
+
+export function strToNum(str: string): number | string {
 	const n = toNumber(str)
 	if (n) return n
 	return str
 }
 
-
-export function realType(el: any): string|number|boolean {
+export function realType(el: any): string|number|boolean|undefined {
+	// If el is `null` or `undefined`
+	if ((typeof el === "object" && el === null) || typeof el === "undefined") return undefined
 	if (typeof el === "object" && el.hasOwnProperty("id")) {
 		el = el.id
 	}
-	if (isNumber(el)) return el
-	const isBool = toBoolean(el)
-	const isNum = toNumber(el)
-	return typeof isBool === "boolean" ? isBool : typeof isNum === "number" ? isNum : el
+	if (isNumber(el)) return toNumber(el)
+	if (isBoolean(el)) return toBoolean(el)
+	return el
 }

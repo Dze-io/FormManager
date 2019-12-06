@@ -12,9 +12,11 @@ export default class CheckboxInput extends DefaultInput {
 	public setValue(value: any) {
 		this.element.checked = this.formatValue(value)
 	}
+
 	public getValue(): boolean {
 		return this.element.checked
 	}
+
 	public formatValue(value: any): boolean {
 		value = toBoolean(value)
 		if (typeof value === "undefined") {

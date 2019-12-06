@@ -1,7 +1,7 @@
 import AttributesManager from './AttributesManager';
 import InputIdentity from './modules/Interfaces/InputIdentity';
 import DefaultInput from './modules/DefaultInput';
-import InputAbstract from './modules/InputAbstract';
+import AbstractInput from './modules/AbstractInput';
 import InputArray from "./modules/Interfaces/InputArray";
 import AttributeListeners from './attributes/AttributeListeners';
 
@@ -84,10 +84,11 @@ export default class FormManager {
 	/**
 	 * Add to the Manager an Input
 	 *
-	 * @param {InputIdentity[]} inter the interface used
+	 * @param {...(typeof AbstractInput[])} inter the interface used
 	 * @memberof FormManager
 	 */
-	public assign(...inter: (typeof InputAbstract[])) {
+
+	public assign(...inter: (typeof AbstractInput[])) {
 		for (const input of inter) {
 			this.FMInputs.unshift(input.identity)
 		}
@@ -120,7 +121,7 @@ export default class FormManager {
 	 * @returns {FMInput}
 	 * @memberof FormManager
 	 */
-	public getInit(element: HTMLElement): InputAbstract|void {
+	public getInit(element: HTMLElement): AbstractInput|void {
 		inputsLoop: for (const input of this.FMInputs) {
 			if (input.classes != undefined) {
 				let tmpList: string[] = []
@@ -152,11 +153,11 @@ export default class FormManager {
 	 * Verify the inputs for errors
 	 *
 	 * @param {boolean} [quick=false] define if the loop should stop after the first error
-	 * @returns {InputAbstract[]} return an array containing the errored elements (Empty if not error)
+	 * @returns {AbstractInput[]} return an array containing the errored elements (Empty if not error)
 	 * @memberof FormManager
 	 */
-	public validate(quick = false): InputAbstract[] {
-		const errored: InputAbstract[] = []
+	public validate(quick = false): AbstractInput[] {
+		const errored: AbstractInput[] = []
 		for (const name in this.inputs) {
 			if (!this.inputs.hasOwnProperty(name)) continue
 			const input = this.inputs[name];
@@ -208,6 +209,20 @@ export default class FormManager {
 		return true
 	}
 
+	/**
+	 * Manually set the value of an element
+	 *
+	 * @param {string} name
+	 * @param {*} value
+	 * @memberof FormManager
+	 */
+	public setValue(name: string, value: any) {
+		if (!this.inputs.hasOwnProperty(name)) {
+			return
+		}
+		const input = this.inputs[name]
+		input.setValue(value)
+	}
 	/**
 	 * Return the JSON `{key: value}` sequence
 	 *

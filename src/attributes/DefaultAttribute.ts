@@ -1,5 +1,5 @@
 import { evalF } from "../Functions";
-import AttributeAbstract from "./AttributeAbstract";
+import AbstractAttribute from "./AbstractAttribute";
 import AttributeListeners from "./AttributeListeners";
 import AttributeIdentity from "./Interfaces/AttributeIdentity";
 
@@ -24,13 +24,18 @@ import AttributeIdentity from "./Interfaces/AttributeIdentity";
  * @implements {FMAFormInitInterface}
  */
 export default class DefaultAttribute
-extends AttributeAbstract {
+extends AbstractAttribute {
 	public trigger(): boolean | void | object {
 		this.run()
 		return true
 	}
 
 	private run() {
+		// Dont override existing value
+		if (this.input.getValue() !== undefined) {
+			return
+		}
+
 		let attrVal = this.input.element.getAttribute("data-default")
 
 		// if element has a date,time,week type
@@ -66,7 +71,8 @@ extends AttributeAbstract {
 
 			// if default is an attribute value
 			if (!el.hasAttribute(splitted[1])) throw Error(`Error: "${this.input.getName()}" element don't have the attribute "${splitted[1]}"`)
-			return this.input.setValue(el.getAttribute(splitted[1]))
+			this.input.setValue(el.getAttribute(splitted[1]))
+			return
 		}
 		this.input.setValue(attrVal)
 	}

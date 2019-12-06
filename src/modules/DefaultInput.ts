@@ -1,11 +1,11 @@
 import { realType } from "../Functions"
-import InputAbstract from "./InputAbstract"
+import AbstractInput from "./AbstractInput"
 import InputIdentity from "./Interfaces/InputIdentity"
 
-export default class DefaultInput extends InputAbstract {
+export default class DefaultInput extends AbstractInput {
 
 	public setValue(value: any) {
-		this.element.value = this.formatValue(value)
+		this.element.value = this.formatValue(value) || ""
 	}
 
 	public getValue(): any {
@@ -13,7 +13,6 @@ export default class DefaultInput extends InputAbstract {
 	}
 
 	public formatValue(value: any): any {
-		if (typeof value === "undefined") return ""
 		// if the value is a number return it as a number obj
 		return realType(value)
 	}

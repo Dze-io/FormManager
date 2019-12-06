@@ -1,6 +1,6 @@
 import FormManager from "./FormManager";
-import InputAbstract from "./modules/InputAbstract";
-import AttributeAbstract from "./attributes/AttributeAbstract";
+import InputAbstract from "./modules/AbstractInput";
+import AbstractAttribute from "./attributes/AbstractAttribute";
 import AttributeIdentity from "./attributes/Interfaces/AttributeIdentity";
 import AttributeListeners from "./attributes/AttributeListeners";
 
@@ -16,17 +16,16 @@ export default class AttributesManager {
 		this.form = form
 	}
 
-	public register(...attribute: typeof AttributeAbstract[]) {
+	public register(...attribute: typeof AbstractAttribute[]) {
 		for (const attr of attribute) {
 			this.attributesArray.push(attr.identity)
 		}
 	}
 
-	public trigger(event: AttributeListeners, data?: any): boolean|object {
+	public trigger(event: AttributeListeners, data?: any): boolean {
 		if (!this.eventsListenersItems[event]) return true
 		for (const el of this.eventsListenersItems[event]) {
-			const res = el.trigger(event, data)
-			if (typeof res !== "undefined") return res
+			el.trigger(event, data)
 		}
 		return true
 	}
@@ -83,5 +82,5 @@ export default class AttributesManager {
 }
 
 interface listenerItems {
-	[key:string]: AttributeAbstract[]
+	[key:string]: AbstractAttribute[]
 }
