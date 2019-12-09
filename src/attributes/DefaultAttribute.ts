@@ -36,12 +36,12 @@ extends AbstractAttribute {
 			return
 		}
 
-		let attrVal = this.input.element.getAttribute("data-default")
+		let attrVal = this.input.element.getAttribute("data-default") || undefined
 
 		// if element has a date,time,week type
 		let type = this.input.element.getAttribute("type") || ""
 		if (type === "date" || type === "time" || type === "week") {
-			this.input.setValue(attrVal !== "" && attrVal !== null ? new Date(attrVal): new Date())
+			this.input.setValue(attrVal !== "" && attrVal !== undefined ? new Date(attrVal): new Date())
 			return
 		}
 
