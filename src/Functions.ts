@@ -26,7 +26,8 @@ export function toNumber(str: any): number | undefined {
 	if (str === "" || typeof str !== "string") return undefined
 
 	// str is a string
-	if ((str.startsWith("0") || str.startsWith("+")) && str.length > 1) return undefined
+	const regex = new RegExp("^(0[0-9])|\\+")
+	if (regex.test(str) && str.length > 1) return undefined
 	const n = Number(str)
 	if (!isNaN(n)) {
 		return n
