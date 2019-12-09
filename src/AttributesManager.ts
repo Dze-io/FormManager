@@ -48,6 +48,13 @@ export default class AttributesManager {
 		}
 	}
 
+	public onUnfocus(ev:FocusEvent) {
+		const target = ev.target
+		if (target) {
+			this.triggerElement(AttributeListeners.INPUT_UNFOCUS, this.form.inputs[(target as HTMLInputElement).name])
+		}
+	}
+
 	// private onChange
 
 	public setup() {
@@ -61,6 +68,8 @@ export default class AttributesManager {
 			el.element.addEventListener("keyup", ev => this.onChange(ev))
 			el.element.removeEventListener("change", ev => this.onChange(ev))
 			el.element.addEventListener("change", ev => this.onChange(ev))
+			el.element.removeEventListener("focusout", ev => this.onUnfocus(ev))
+			el.element.addEventListener("focusout", ev => this.onUnfocus(ev))
 
 			// loop through assignments
 			for (const key in this.attributesArray) {

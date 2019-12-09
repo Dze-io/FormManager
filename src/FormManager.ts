@@ -163,8 +163,11 @@ export default class FormManager {
 			const input = this.inputs[name];
 			const res = this.attributeManager.triggerElement(AttributeListeners.VERIFY, input) as boolean
 			if (input.verify() && res) continue
+			this.attributeManager.triggerElement(AttributeListeners.INPUT_ERROR, input)
 			errored.push(input)
-			if(quick) return errored
+			if(quick) {
+				return errored
+			}
 		}
 		return errored
 	}
@@ -175,8 +178,8 @@ export default class FormManager {
 	 * @returns {boolean}
 	 * @memberof FormManager
 	 */
-	public verify(): boolean {
-		return this.validate(true).length === 0
+	public verify(quick = true): boolean {
+		return this.validate(quick).length === 0
 	}
 
 	/**
@@ -250,11 +253,15 @@ export default class FormManager {
 	 */
 	public fillFromJSON(json: any) {
 		for (const key in json) {
-			if (json.hasOwnProperty(key)) {
-				const element = json[key];
-				if(this.inputs[key] !== undefined) this.inputs[key].setValue(element)
-				else console.warn(`${key} is not a valid input name`)
+			if (!json.hasOwnProperty(key)) {
+				continue
 			}
+			const element = json[key];
+			if (this.inputs[key] === undefined) {
+				console.warn(`${key} is not a valid input name`)
+				continue
+			}
+			this.inputs[key].setValue(element)
 		}
 		this.attributeManager.trigger(AttributeListeners.FORM_FILL)
 	}
