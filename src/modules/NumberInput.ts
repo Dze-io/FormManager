@@ -1,6 +1,7 @@
 import InputIdentity from './Interfaces/InputIdentity';
 import DefaultInput from './DefaultInput';
 import { toNumber, isNumber } from '../Functions';
+import FormManager from '../FormManager';
 
 /**
  *
@@ -9,13 +10,26 @@ import { toNumber, isNumber } from '../Functions';
  */
 export default class NumberInput extends DefaultInput {
 
+	constructor(element: HTMLElement, form: FormManager) {
+		super(element, form)
+		const regex = new RegExp("^[0-9.]{1}|Backspace$")
+		element.addEventListener("keydown", (ev: KeyboardEvent) => {
+			if (!regex.test(ev.key) && !ev.ctrlKey) {
+				ev.preventDefault()
+			}
+		})
+
+	}
+
 	public formatValue(value: any): number|undefined {
 		const n = toNumber(value)
 		return n
 	}
 
 	public verify(): boolean {
-		return typeof this.getValue() === "undefined" || isNumber(this.getValue())
+		const val = this.getValue()
+		if ( val === undefined && this.element.hasAttribute("required")) return false
+		return typeof val === "undefined" || isNumber(val)
 	}
 
 	public static identity: InputIdentity = {
