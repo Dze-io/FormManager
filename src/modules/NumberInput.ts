@@ -19,6 +19,10 @@ export default class NumberInput extends DefaultInput {
 			}
 		})
 
+		// Desactivate Wheel Event
+		element.addEventListener("wheel", (e: WheelEvent) => {
+			if (document.activeElement === this.element) e.preventDefault()
+		})
 	}
 
 	public formatValue(value: any): number|undefined {
