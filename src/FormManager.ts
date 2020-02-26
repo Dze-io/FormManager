@@ -65,13 +65,14 @@ export default class FormManager {
 	 * @param {HTMLFormElement} form the form HTMLElement
 	 * @memberof FormManager
 	 */
-	public constructor(form: HTMLFormElement) {
+	public constructor(form: HTMLFormElement, onSubmit?: (ev: Event) => void) {
 		this.form = form
 		this.attributeManager = new AttributesManager(this)
 
 		//Prevent default submit action
 		form.addEventListener("submit", (e: Event) => {
 			e.preventDefault()
+			onSubmit && onSubmit(e)
 		})
 
 		//assign default form interface
