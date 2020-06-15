@@ -9,6 +9,7 @@ import DefaultAttribute from './attributes/DefaultAttribute'
 import AutosetAttribute from './attributes/AutosetAttribute'
 import CheckboxInput from './modules/CheckboxInput'
 import NumberInput from './modules/NumberInput'
+import ErrorAttribute from './attributes/ErrorAttribute'
 
 /**
  * This class is Mainly used for (non-npm) browser usage as it contains every buitins extensions
@@ -21,19 +22,20 @@ export default class fm extends FormManager {
 	public constructor(form: HTMLFormElement) {
 		super(form)
 		this.assign(
+			CheckboxInput,
 			DatalistInput,
 			DateInput,
+			NumberInput,
 			RepeatInput,
 			SelectInput,
-			CheckboxInput,
-			NumberInput,
 		)
 		this.setupInputs()
 		this.attributeManager.register(
-			RegexAttribute,
-			IgnoreAttribute,
-			DefaultAttribute,
 			AutosetAttribute,
+			DefaultAttribute,
+			ErrorAttribute,
+			IgnoreAttribute,
+			RegexAttribute,
 		)
 		this.attributeManager.setup()
 	}
