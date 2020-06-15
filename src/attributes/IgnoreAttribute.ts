@@ -36,6 +36,5 @@ extends AbstractAttribute {
 	public static identity: AttributeIdentity = {
 		attribute: IgnoreAttribute,
 		dataElement: "data-ignore"
-
 	}
 }

@@ -7,9 +7,10 @@ extends AbstractAttribute {
 	public trigger(): boolean {
 		const regStr = this.input.element.dataset.regex
 		if (!regStr) return true
+
 		const regex = new RegExp(regStr, "g")
 		const test = this.input.getValue() + ""
-		console.log(test)
+
 		return regex.test(test)
 	}
 
