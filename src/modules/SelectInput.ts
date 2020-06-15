@@ -1,13 +1,35 @@
 import InputIdentity from './Interfaces/InputIdentity';
 import DefaultInput from './DefaultInput';
 import { realType } from '../Functions';
+import FormManager from '../FormManager';
 
-/**
- *
- * @class FMDateInput
- * @extends {FMInput}
- */
 export default class SelectInput extends DefaultInput {
+
+	public constructor(element: HTMLSelectElement, form: FormManager) {
+		super(element, form)
+		if (element.dataset.filterElement) {
+			const options = element.querySelectorAll('option')
+			const el = form.form.querySelector<HTMLInputElement>(`[name="${element.dataset.filterElement}"]`)
+			if (!el) {
+				console.warn(`Select Input has filter Attr but can't find the element (${element.dataset.filterElement})`)
+			} else {
+				const fn = () => {
+					options.forEach((opt) => {
+						if (opt.dataset.filter === el.value || opt.dataset.filter === undefined) {
+							opt.removeAttribute('style')
+						} else {
+							opt.style.display = 'none'
+							if (this.formatValue(opt.value) === this.getValue()) {
+								this.setValue(undefined)
+							}
+						}
+					})
+				}
+				el.addEventListener('change', fn)
+				fn()
+			}
+		}
+	}
 
 	public setValue(value: any) {
 		this.element.value = this.formatValue(value)
@@ -25,7 +47,7 @@ export default class SelectInput extends DefaultInput {
 	}
 
 	public static identity: InputIdentity = {
-		input: SelectInput,
+		input: SelectInput as any,
 		tagName: "select"
 	}
 }
