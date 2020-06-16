@@ -20,6 +20,7 @@ export default class AttributesManager {
 		for (const attr of attribute) {
 			this.attributesArray.push(attr.identity)
 		}
+		return this
 	}
 
 	public trigger(event: AttributeListeners, data?: any): boolean {

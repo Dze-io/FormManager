@@ -70,9 +70,17 @@ export default class FormManager {
 		this.attributeManager = new AttributesManager(this)
 
 		//Prevent default submit action
-		form.addEventListener("submit", (e: Event) => {
+		form.addEventListener("submit", (e: Event & {submitter?: HTMLInputElement & {formmethod?: string, action?: string}}) => {
 			e.preventDefault()
-			onSubmit && onSubmit(this)
+			form.dispatchEvent(new Event('submitStart'))
+			if (onSubmit) {
+				return onSubmit(this)
+			}
+			const submitUrl: string = e.submitter && e.submitter.action || form.action || window.location.toString()
+			const method: string = e.submitter && e.submitter.formmethod || form.getAttribute('method') || 'POST'
+			this.send(submitUrl, undefined, {
+				method: method
+			})
 		})
 
 		//assign default form interface
@@ -93,6 +101,7 @@ export default class FormManager {
 		for (const input of inter) {
 			this.FMInputs.unshift(input.identity)
 		}
+		return this
 	}
 
 	/**
@@ -113,6 +122,7 @@ export default class FormManager {
 			if (el) this.inputs[el.getName()] = el
 		});
 		this.attributeManager.trigger(AttributeListeners.FORM_INIT)
+		return this
 	}
 
 	/**
@@ -198,7 +208,10 @@ export default class FormManager {
 		let datas = this.getJSON()
 
 		// Verify datas
-		if ((options.verify === undefined || (typeof options.verify === "boolean" && options.verify)) && !this.verify()) return false
+		if ((options.verify === undefined || (typeof options.verify === "boolean" && options.verify)) && !this.verify()) {
+			this.form.dispatchEvent(new Event('submitError'))
+			return false
+		}
 
 		// Trigger Event
 		const ev = this.attributeManager.trigger(AttributeListeners.FORM_SUBMIT, datas)
@@ -208,7 +221,10 @@ export default class FormManager {
 		const ajax = new XMLHttpRequest
 		ajax.open(options.method || "POST", url)
 		ajax.setRequestHeader("Content-Type", "application/json")
-		ajax.addEventListener("loadend", callback || (() => {}))
+		callback && ajax.addEventListener("loadend", callback)
+		ajax.addEventListener('loadend', (ev) => {
+			this.form.dispatchEvent(new CustomEvent('submitEnd', {detail: ajax}))
+		})
 		ajax.send(JSON.stringify(datas))
 		return true
 	}
@@ -226,7 +242,28 @@ export default class FormManager {
 		}
 		const input = this.inputs[name]
 		input.setValue(value)
+		return this
 	}
+
+	public setJSON(data: {[key:string]: any}) {
+		for (const key in data) {
+			if (!data.hasOwnProperty(key)) {
+				continue
+			}
+			const value = data[key]
+			this.setValue(key, value)
+		}
+		return this
+	}
+
+	public getValue(name: string): any {
+		if (!this.inputs.hasOwnProperty(name)) {
+			return
+		}
+		return this.inputs[name].getValue()
+	}
+
+
 	/**
 	 * Return the JSON `{key: value}` sequence
 	 *
