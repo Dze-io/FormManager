@@ -129,7 +129,7 @@ export default class RepeatInput extends DefaultInput {
 
 				if (this.element.querySelectorAll(".fmr-element").length <= index) {
 					//add element
-					if ((el as any) == "") continue
+					if (!el) continue
 					this.addLine(el)
 					continue
 				}
@@ -160,6 +160,10 @@ export default class RepeatInput extends DefaultInput {
 	}
 
 	public verify(): boolean {
+		console.log(this.elements.length)
+		if (this.element.hasAttribute('required') && this.elements.length === 0) {
+			return false
+		}
 		for (const el of this.elements) {
 			for (const i of el) {
 				if (!i.verify()) return false

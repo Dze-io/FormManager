@@ -4,9 +4,23 @@ import { realType } from '../Functions';
 import FormManager from '../FormManager';
 
 export default class SelectInput extends DefaultInput {
-
+	
 	public constructor(element: HTMLSelectElement, form: FormManager) {
 		super(element, form)
+		if (element.hasAttribute('data-datalist')) {
+			const datalist = document.querySelector(`#${element.dataset.datalist}`)
+			if (!datalist) {
+				console.warn('Error, Datalist does not exist')
+			} else {
+				for (const child of element.children) {
+					!(child as HTMLElement).hasAttribute('disabled') && child.remove()
+				}
+				for (const child of datalist.children) {
+					// console.log(child.value)
+					element.appendChild(child.cloneNode(true))
+				}
+			}
+		}
 		if (element.dataset.filterElement) {
 			const options = element.querySelectorAll('option')
 			const el = form.form.querySelector<HTMLInputElement>(`[name="${element.dataset.filterElement}"]`)
