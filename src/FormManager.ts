@@ -242,6 +242,9 @@ export default class FormManager {
 		}
 		const input = this.inputs[name]
 		input.setValue(value)
+		event = document.createEvent("HTMLEvents");
+		event.initEvent("change", true, true);
+		input.element.dispatchEvent(event);
 		return this
 	}
 
