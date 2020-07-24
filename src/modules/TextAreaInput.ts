@@ -7,13 +7,19 @@ export default class TextAreaInput extends DefaultInput {
 	public constructor(element: HTMLElement, form: FormManager) {
 		super(element, form)
 		element.style.resize = 'none'
-		const event = () => {
-			element.style.minHeight = "5px"
-			element.style.minHeight = `calc(2em + ${element.scrollHeight+5}px)`
-		}
-		;(element as HTMLTextAreaElement).addEventListener('keydown', event)
-		;(element as HTMLTextAreaElement).addEventListener('keypress', event)
 
+		;(element as HTMLTextAreaElement).addEventListener('keydown', this.event)
+		;(element as HTMLTextAreaElement).addEventListener('keypress', this.event)
+	}
+
+	private event = () => {
+		this.element.style.minHeight = "5px"
+		this.element.style.minHeight = `calc(2em + ${this.element.scrollHeight+5}px)`
+	}
+
+	public setValue(value: any) {
+		this.event()
+		this.element.value = this.formatValue(value) || ""
 	}
 
 	public static identity: InputIdentity = {
