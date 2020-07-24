@@ -4,7 +4,7 @@ import { realType } from '../Functions';
 import FormManager from '../FormManager';
 
 export default class SelectInput extends DefaultInput {
-	
+
 	public constructor(element: HTMLSelectElement, form: FormManager) {
 		super(element, form)
 		if (element.hasAttribute('data-datalist')) {
@@ -12,9 +12,11 @@ export default class SelectInput extends DefaultInput {
 			if (!datalist) {
 				console.warn('Error, Datalist does not exist')
 			} else {
+				// @ts-ignore
 				for (const child of element.children) {
 					!(child as HTMLElement).hasAttribute('disabled') && child.remove()
 				}
+				// @ts-ignore
 				for (const child of datalist.children) {
 					// console.log(child.value)
 					element.appendChild(child.cloneNode(true))
