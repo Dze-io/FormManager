@@ -18,8 +18,8 @@ export default class TextAreaInput extends DefaultInput {
 	}
 
 	public setValue(value: any) {
-		this.event()
 		this.element.value = this.formatValue(value) || ""
+		this.event()
 	}
 
 	public static identity: InputIdentity = {
