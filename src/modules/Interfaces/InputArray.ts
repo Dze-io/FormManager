@@ -5,6 +5,6 @@ import AbstractInput from "../AbstractInput";
  *
  * @interface InputArray
  */
-export default interface InputArray {
-	[key: string]: AbstractInput
-}
+type InputArray<T = Record<string, any>> = Record<keyof T, AbstractInput>
+
+export default InputArray

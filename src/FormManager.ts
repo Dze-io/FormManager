@@ -17,7 +17,7 @@ import AttributeListeners from './attributes/AttributeListeners';
  * @export
  * @class FormManager
  */
-export default class FormManager {
+export default class FormManager<T extends Record<string, any> = Record<string, any>> {
 
 	/**
 	 * List of inputs
@@ -26,7 +26,7 @@ export default class FormManager {
 	 * @type {InputArray}
 	 * @memberof FormManager
 	 */
-	public inputs: InputArray = {}
+	public inputs: InputArray<T> = {} as any
 
 	/**
 	 * List of interfaces
@@ -110,7 +110,7 @@ export default class FormManager {
 	 * @memberof FormManager
 	 */
 	public setupInputs() {
-		this.inputs = {};
+		this.inputs = {} as any;
 		const formID = this.form.getAttribute("id")
 
 		// Find every inputs
@@ -119,7 +119,7 @@ export default class FormManager {
 		// Find each input their class
 		request.forEach((element: HTMLElement) => {
 			let el = this.getInit(element)
-			if (el) this.inputs[el.getName()] = el
+			if (el) this.inputs[el.getName() as keyof T] = el
 		});
 		this.attributeManager.trigger(AttributeListeners.FORM_INIT)
 		return this
@@ -236,7 +236,7 @@ export default class FormManager {
 	 * @param {*} value
 	 * @memberof FormManager
 	 */
-	public setValue(name: string, value: any) {
+	public setValue(name: keyof T, value: any) {
 		if (!this.inputs.hasOwnProperty(name)) {
 			return
 		}
@@ -248,7 +248,7 @@ export default class FormManager {
 		return this
 	}
 
-	public setJSON(data: {[key:string]: any}) {
+	public setJSON(data: Partial<T>) {
 		for (const key in data) {
 			if (!data.hasOwnProperty(key)) {
 				continue
@@ -259,7 +259,7 @@ export default class FormManager {
 		return this
 	}
 
-	public getValue(name: string): any {
+	public getValue(name: keyof T): any {
 		if (!this.inputs.hasOwnProperty(name)) {
 			return
 		}
@@ -272,7 +272,7 @@ export default class FormManager {
 	 *
 	 * @memberof FormManager
 	 */
-	public getJSON(): {[key: string]: any} {
+	public getJSON(): T {
 		const jsonObject: any = {}
 		for (const name in this.inputs) {
 			if (this.inputs.hasOwnProperty(name)) {
@@ -292,7 +292,7 @@ export default class FormManager {
 	 * @param {*} json the JSON
 	 * @memberof FormManager
 	 */
-	public fillFromJSON(json: any) {
+	public fillFromJSON(json: Partial<T>) {
 		for (const key in json) {
 			if (!json.hasOwnProperty(key)) {
 				continue
@@ -365,7 +365,7 @@ export default class FormManager {
 	 * @param {string} inputName
 	 * @memberof FormManager
 	 */
-	public setModeForInput(mode: FMMode, inputName: string) {
+	public setModeForInput(mode: FMMode, inputName: keyof T) {
 		if (mode == FMMode.ViewMode) {
 			if (this.inputs[inputName]) {
 				this.inputs[inputName].element.setAttribute("disabled", "")
@@ -395,7 +395,7 @@ export default class FormManager {
 		this.attributeManager.trigger(AttributeListeners.POST_CLEAR)
 	}
 
-	public clearInput(input: string) {
+	public clearInput(input: keyof T) {
 		if (this.inputs.hasOwnProperty(input)) {
 			const inp = this.inputs[input];
 			inp.setValue(undefined)
