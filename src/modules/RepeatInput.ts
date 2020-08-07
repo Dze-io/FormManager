@@ -142,15 +142,23 @@ export default class RepeatInput extends DefaultInput {
 		let values = []
 		for (const line of this.elements) {
 			let lineArray: any = {}
+			const realLine: InputAbstract[] = []
+			for (let i = 0; i < line.length; i++) {
+				const col = line[i];
+				if (!col.element.hasAttribute('data-ignore')) {
+					console.log(col)
+					realLine.push(col)
+				}
+			}
 			//one element repeat
-			if (line.length == 1) {
-				for (const col of line) {
+			if (realLine.length === 1) {
+				for (const col of realLine) {
 					values.push(col.getValue())
 				}
 				continue
 			}
 			// multi elements repeat
-			for (const col of line) {
+			for (const col of realLine) {
 				// if ()
 				lineArray[col.getName()] = col.getValue()
 			}
